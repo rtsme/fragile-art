@@ -89,7 +89,9 @@ conflict it hedges — which is a strong candidate for the smeared, doubled deta
 Concretely:
 
 - **Identical canvas size** for all four images.
-- **Silhouette height and width within 3%** across views. Over 10% is a hard fail.
+- **Silhouette height within 3% across all upright views.** Compare width within opposing pairs
+  (front/back and left/right), not front against side; a rectangular asset's width and depth differ.
+  Over 10% within one of those valid comparisons is a hard fail.
 - **Subject centred identically** — centre drift under 2% of canvas.
 - **Generate the four as one set**, not as four independent images, wherever the tool allows it.
   Independent generation is what produces the drift.
@@ -120,6 +122,23 @@ and cheap to reuse. Model each once, reuse across the faction:
 Reuse is a bonus, not a consolation: a shared kit gives the faction a consistency that
 per-asset generation cannot, and it keeps the parts that read at gameplay distance under
 deliberate control.
+
+## E. Split generation and assembly
+
+The approved concept is the final dressed appearance target, not a geometry-reconstruction input.
+Before mesh generation, create a body-only source in the asset's `Base/` folder. It keeps only the
+main structural shell and replaces every detachable detail with a closed recess, flush pad or S1-S4
+receiver. Generate the shell from body-only orthographic references; generate or model reusable
+details separately and attach them afterwards.
+
+After the base geometry passes review, the final concept may be used in a **texture-only** pass as
+a palette/material-style reference. That pass must preserve geometry and be rejected if it paints
+shared doors, glazing, vents, pipes, railings, antennae or other attachments onto unrelated shell
+surfaces.
+
+This rule applies even when a shared component is individually reconstruction-safe. The point is
+to stop the parent generator from having to resolve many small adjacent details at building scale.
+See [`shared-assembly-pipeline.md`](shared-assembly-pipeline.md) for the folder contract and gates.
 
 ## Prompt block
 

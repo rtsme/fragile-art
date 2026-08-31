@@ -11,6 +11,10 @@ tools/art-forge/meshy.key
 **/*_ai_v*.glb
 **/*_experiment_*.glb
 
+# Explicitly rejected Command Centre material trial. Its Markdown failure record
+# is retained, but the 88 MB binary must not be promoted or shipped.
+Models/Terran/Buildings/BLD-CMD-001/Base/BLD-CMD-001_base_textured_v01.glb
+
 # Max-quality (no-remesh) source sculpts and their 4K maps. These are the detail
 # source you retopo and bake from, not a shippable asset — ~85 MB of mesh plus
 # ~50 MB of textures each. Commit the decimated game asset instead.

@@ -5,7 +5,25 @@ Scope: **75 Terran tracker assets**. The approved Command Centre v01 and current
 
 ## Shared modular-detail library
 
-Visual anchor: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_shared-detail-library_concept_v01.png`
+Visual anchor: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_shared-detail-library_concept_v02.png`
+
+Priority-module extension: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_priority-modules_concept_v03.png`
+
+Production specification: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_production-spec_v02.md`
+
+Priority-module specification: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_priority-modules_production-spec_v03.md`
+
+Command Centre gap-module extension: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_command-centre-gap-modules_concept_v04.png`
+
+Command Centre gap-module specification: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_command-centre-gap-modules_production-spec_v04.md`
+
+Concept usage audit: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_component-usage-audit_v01.md`
+
+Split-generation rule: `docs/shared-assembly-pipeline.md`
+
+The original unlabelled v01 sheet is retained as an approved visual-direction record. The v02
+sheet organizes the same language into twelve labelled families; the companion specification is
+authoritative for component IDs, dimensions, snap footprints and reconstruction classification.
 
 | Code | Family |
 |---|---|
@@ -21,6 +39,12 @@ Visual anchor: `Concepts/Terran/Shared/TER-KIT-001/TER-KIT-001_shared-detail-lib
 | TER-BRC | solid buttresses and enclosed brace fairings |
 | TER-DCK | docking clamps, landing/service sockets and refuelling couplers |
 | TER-MAN | crane/manipulator roots, hinge blocks and folded-state mounts |
+| TER-GLZ | opaque glazing panels, window bands and greenhouse roof bays |
+| TER-SOL | rigid solar panels, panel wings and folded hinge/root blocks |
+| TER-ROT | enclosed bearing rings, traverses and heavy turntables |
+| TER-WPN | enclosed gun receivers, thick barrel shrouds and muzzle modules |
+| TER-PWR | power nodes, capacitor banks and induction housings |
+| TER-LCH | closed missile-cell pods, tube adapters and magazines |
 
 Dishes, genuine masts, railings, ladders, exposed pipework, cranes, gantries, scaffolding and other thin/open parts are **hand-modelled shared-kit components**. The generated body concepts use closed placeholders or sockets for them.
 
@@ -30,7 +54,7 @@ Dishes, genuine masts, railings, ladders, exposed pipework, cranes, gantries, sc
 |---|---|---|---|
 | ENV-INF-001 — Construction Pad Kit | `Concepts/Terran/Environment/ENV-INF-001/ENV-INF-001_concept_v01.png` | TER-PNL, TER-LGT, TER-PIP, TER-MAN, TER-ACC, TER-PAR | use TER-PIP; no generated loose runs |
 | ENV-INF-002 — Road and Pipe Network | `Concepts/Terran/Environment/ENV-INF-002/ENV-INF-002_concept_v01.png` | TER-PNL, TER-LGT, TER-PIP, TER-ACC, TER-PAR | use TER-PIP; no generated loose runs |
-| BLD-CMD-001 — Command Centre | `Concepts/Terran/Buildings/BLD-CMD-001/BLD-CMD-001_concept_v01.png` | TER-PNL, TER-LGT, TER-ANT, TER-BRC, TER-ACC, TER-PAR | attach TER-ANT after body reconstruction |
+| BLD-CMD-001 — Command Centre | `Concepts/Terran/Buildings/BLD-CMD-001/BLD-CMD-001_concept_v01.png` | TER-GLZ, TER-DOR, TER-ANT, TER-ROT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PNL, TER-LGT, TER-PAR, TER-BRC | split-pipeline trial: generate `Base/BLD-CMD-001_base-concept_v01.png` only; assemble per `BLD-CMD-001_assembly-manifest_v01.md`; 11 former gaps defined in TER-KIT-001 v04, production meshes pending |
 | BLD-HAB-001 — Residential Block | `Concepts/Terran/Buildings/BLD-HAB-001/BLD-HAB-001_concept_v01.png` | TER-PNL, TER-LGT, TER-VNT, TER-DOR, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-HAB-002 — Living Quarters | `Concepts/Terran/Buildings/BLD-HAB-002/BLD-HAB-002_concept_v01.png` | TER-PNL, TER-LGT, TER-VNT, TER-PIP, TER-DOR, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-LIF-001 — Medical Centre | `Concepts/Terran/Buildings/BLD-LIF-001/BLD-LIF-001_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-DOR, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
@@ -39,7 +63,7 @@ Dishes, genuine masts, railings, ladders, exposed pipework, cranes, gantries, sc
 | BLD-LIF-002 — Air Processor | `Concepts/Terran/Buildings/BLD-LIF-002/BLD-LIF-002_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-LIF-003 — Environment Control | `Concepts/Terran/Buildings/BLD-LIF-003/BLD-LIF-003_concept_v01.png` | TER-PNL, TER-LGT, TER-VNT, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-LIF-004 — Hydration Plant | `Concepts/Terran/Buildings/BLD-LIF-004/BLD-LIF-004_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PAR | use TER-PIP; no generated loose runs |
-| BLD-LIF-005 — Hydroponics Plant | `Concepts/Terran/Buildings/BLD-LIF-005/BLD-LIF-005_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-DOR, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
+| BLD-LIF-005 — Hydroponics Plant | `Concepts/Terran/Buildings/BLD-LIF-005/BLD-LIF-005_concept_v02.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-DOR, TER-ACC, TER-PAR, TER-GLZ | standardized opaque TER-GLZ greenhouse bays selected in v02 |
 | BLD-MIN-001 — Basic Mine | `Concepts/Terran/Buildings/BLD-MIN-001/BLD-MIN-001_concept_v03.png` | TER-PNL, TER-LGT, TER-TNK, TER-DOR, TER-BRC, TER-ACC, TER-PAR | hand-model TER-MAN/open-framework parts |
 | BLD-MIN-002 — Advanced Mine | `Concepts/Terran/Buildings/BLD-MIN-002/BLD-MIN-002_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-MIN-003 — Deep Bore Mine | `Concepts/Terran/Buildings/BLD-MIN-003/BLD-MIN-003_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-MAN, TER-ACC, TER-PAR | hand-model TER-MAN/open-framework parts |
@@ -49,8 +73,8 @@ Dishes, genuine masts, railings, ladders, exposed pipework, cranes, gantries, sc
 | BLD-STO-003 — Ore Teleporter | `Concepts/Terran/Buildings/BLD-STO-003/BLD-STO-003_concept_v02.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | PRP-IND-001 — Conveyor Module Kit | `Concepts/Terran/Props/PRP-IND-001/PRP-IND-001_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-BRC | body concept is scan-safe; add shared fittings during cleanup |
 | PRP-IND-002 — Ore Container Kit | `Concepts/Terran/Props/PRP-IND-002/PRP-IND-002_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-DOR, TER-DCK | body concept is scan-safe; add shared fittings during cleanup |
-| BLD-PWR-001 — Solar Panel | `Concepts/Terran/Buildings/BLD-PWR-001/BLD-PWR-001_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-PIP, TER-ACC, TER-PAR | use TER-PIP; no generated loose runs; hand-model thin/deployable surfaces from thick concept massing |
-| BLD-PWR-002 — Solar Matrix | `Concepts/Terran/Buildings/BLD-PWR-002/BLD-PWR-002_concept_v01.png` | TER-PNL, TER-LGT, TER-VNT, TER-PIP, TER-ACC, TER-PAR | hand-model thin/deployable surfaces from thick concept massing |
+| BLD-PWR-001 — Solar Panel | `Concepts/Terran/Buildings/BLD-PWR-001/BLD-PWR-001_concept_v02.png` | TER-PNL, TER-LGT, TER-TNK, TER-PIP, TER-ACC, TER-PAR, TER-SOL, TER-ROT | standardized TER-SOL panel bank and TER-ROT-S4 traverse selected in v02; hand-model panel assembly |
+| BLD-PWR-002 — Solar Matrix | `Concepts/Terran/Buildings/BLD-PWR-002/BLD-PWR-002_concept_v02.png` | TER-PNL, TER-LGT, TER-VNT, TER-PIP, TER-ACC, TER-PAR, TER-SOL, TER-ROT | six repeated TER-SOL-WNG-L modules and TER-ROT-S4 selected in v02; hand-model panel assembly |
 | BLD-PWR-003 — Power Store | `Concepts/Terran/Buildings/BLD-PWR-003/BLD-PWR-003_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-PWR-004 — Power Plant | `Concepts/Terran/Buildings/BLD-PWR-004/BLD-PWR-004_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-PIP, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-PWR-005 — High-Energy Generator | `Concepts/Terran/Buildings/BLD-PWR-005/BLD-PWR-005_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-PIP, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
@@ -63,10 +87,10 @@ Dishes, genuine masts, railings, ladders, exposed pipework, cranes, gantries, sc
 | BLD-LOG-003 — Repair Facility | `Concepts/Terran/Buildings/BLD-LOG-003/BLD-LOG-003_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-VNT, TER-DOR, TER-DCK, TER-MAN, TER-ACC, TER-PAR | hand-model TER-MAN/open-framework parts |
 | BLD-LOG-004 — Cargo Depot | `Concepts/Terran/Buildings/BLD-LOG-004/BLD-LOG-004_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-DOR, TER-DCK, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-MFG-004 — Construction Yard | `Concepts/Terran/Buildings/BLD-MFG-004/BLD-MFG-004_concept_v01.png` | TER-PNL, TER-LGT, TER-TNK, TER-DOR, TER-MAN, TER-BRC, TER-ACC, TER-PAR | hand-model TER-MAN/open-framework parts |
-| BLD-DEF-001 — Basic Turret | `Concepts/Terran/Buildings/BLD-DEF-001/BLD-DEF-001_concept_v01.png` | TER-PNL, TER-LGT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
-| BLD-DEF-002 — Plasma Turret | `Concepts/Terran/Buildings/BLD-DEF-002/BLD-DEF-002_concept_v01.png` | TER-PNL, TER-LGT, TER-VNT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
-| BLD-DEF-003 — Photon Turret | `Concepts/Terran/Buildings/BLD-DEF-003/BLD-DEF-003_concept_v01.png` | TER-PNL, TER-LGT, TER-ANT, TER-VNT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR | attach TER-ANT after body reconstruction; use TER-PIP; no generated loose runs; hand-model thin/deployable surfaces from thick concept massing |
-| BLD-DEF-004 — Anti-Missile Pod | `Concepts/Terran/Buildings/BLD-DEF-004/BLD-DEF-004_concept_v01.png` | TER-PNL, TER-LGT, TER-ANT, TER-DOR, TER-DCK, TER-ACC, TER-PAR | attach TER-ANT after body reconstruction |
+| BLD-DEF-001 — Basic Turret | `Concepts/Terran/Buildings/BLD-DEF-001/BLD-DEF-001_concept_v02.png` | TER-PNL, TER-LGT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR, TER-WPN, TER-ROT | standardized medium TER-WPN gun and TER-ROT-S3 selected in v02; hand-model weapon assembly |
+| BLD-DEF-002 — Plasma Turret | `Concepts/Terran/Buildings/BLD-DEF-002/BLD-DEF-002_concept_v02.png` | TER-PNL, TER-LGT, TER-VNT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR, TER-WPN, TER-PWR, TER-ROT | standardized large TER-WPN plasma emitter, TER-PWR banks and TER-ROT-S4 selected in v02 |
+| BLD-DEF-003 — Photon Turret | `Concepts/Terran/Buildings/BLD-DEF-003/BLD-DEF-003_concept_v02.png` | TER-PNL, TER-LGT, TER-ANT, TER-VNT, TER-PIP, TER-DCK, TER-BRC, TER-ACC, TER-PAR, TER-WPN, TER-ROT | paired medium TER-WPN guns, block radar and TER-ROT-S4 selected in v02 |
+| BLD-DEF-004 — Anti-Missile Pod | `Concepts/Terran/Buildings/BLD-DEF-004/BLD-DEF-004_concept_v02.png` | TER-PNL, TER-LGT, TER-ANT, TER-DOR, TER-DCK, TER-ACC, TER-PAR, TER-LCH, TER-ROT | standardized 4x4 TER-LCH pod, TER-ANT sensors and TER-ROT-S4 selected in v02 |
 | BLD-DEF-005 — Screen Generator | `Concepts/Terran/Buildings/BLD-DEF-005/BLD-DEF-005_concept_v01.png` | TER-PNL, TER-LGT, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-DEF-006 — Missile Silo | `Concepts/Terran/Buildings/BLD-DEF-006/BLD-DEF-006_concept_v01.png` | TER-PNL, TER-LGT, TER-DOR, TER-DCK, TER-BRC, TER-ACC, TER-PAR | body concept is scan-safe; add shared fittings during cleanup |
 | BLD-DEF-007 — Satellite Silo | `Concepts/Terran/Buildings/BLD-DEF-007/BLD-DEF-007_concept_v01.png` | TER-PNL, TER-LGT, TER-ANT, TER-DOR, TER-DCK, TER-MAN, TER-BRC, TER-ACC, TER-PAR | attach TER-ANT after body reconstruction; hand-model TER-MAN/open-framework parts |

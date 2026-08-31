@@ -1,0 +1,860 @@
+{
+  "schema": "art-forge-assembly-v1",
+  "name": "BLD-CMD-001 Command Centre \u2014 v04 trial assembly",
+  "units": "metres",
+  "status": "concept-match placement; receiver coordinates pending review",
+  "notes": "The base and every shared component are normalized to their production envelopes at view time. H-route parts are reconstruction experiments.",
+  "assets": {
+    "base": {
+      "path": "Models/Terran/Buildings/BLD-CMD-001/Base/BLD-CMD-001_base_concept-textured_v02.glb",
+      "size": [
+        70,
+        35,
+        55
+      ],
+      "route": "base"
+    },
+    "TER-GLZ-BND-M": {
+      "path": "Models/Terran/Shared/TER-GLZ-BND-M/TER-GLZ-BND-M_hq_v01.glb",
+      "size": [
+        4,
+        1.5,
+        0.5
+      ],
+      "route": "R"
+    },
+    "TER-GLZ-BND-CNR": {
+      "path": "Models/Terran/Shared/TER-GLZ-BND-CNR/TER-GLZ-BND-CNR_hq_v01.glb",
+      "size": [
+        2,
+        1.5,
+        2
+      ],
+      "route": "R"
+    },
+    "TER-DOR-PRT-L": {
+      "path": "Models/Terran/Shared/TER-DOR-PRT-L/TER-DOR-PRT-L_hq_v01.glb",
+      "size": [
+        6,
+        5,
+        2
+      ],
+      "route": "R"
+    },
+    "TER-VNT-FAN-L": {
+      "path": "Models/Terran/Shared/TER-VNT-FAN-L/TER-VNT-FAN-L_hq_v01.glb",
+      "size": [
+        4,
+        4,
+        1.5
+      ],
+      "route": "H"
+    },
+    "TER-PIP-ELB-M": {
+      "path": "Models/Terran/Shared/TER-PIP-ELB-M/TER-PIP-ELB-M_hq_v01.glb",
+      "size": [
+        2.5,
+        1.5,
+        2.5
+      ],
+      "route": "R"
+    },
+    "TER-PIP-TEE-M": {
+      "path": "Models/Terran/Shared/TER-PIP-TEE-M/TER-PIP-TEE-M_hq_v01.glb",
+      "size": [
+        3,
+        1.5,
+        2
+      ],
+      "route": "R"
+    },
+    "TER-ACC-RMP-L": {
+      "path": "Models/Terran/Shared/TER-ACC-RMP-L/TER-ACC-RMP-L_hq_v01.glb",
+      "size": [
+        4,
+        2,
+        8
+      ],
+      "route": "R"
+    },
+    "TER-ACC-RAL-M": {
+      "path": "Models/Terran/Shared/TER-ACC-RAL-M/TER-ACC-RAL-M_hq_v01.glb",
+      "size": [
+        4,
+        1.2,
+        0.3
+      ],
+      "route": "H"
+    },
+    "TER-ACC-RAL-CNR": {
+      "path": "Models/Terran/Shared/TER-ACC-RAL-CNR/TER-ACC-RAL-CNR_hq_v01.glb",
+      "size": [
+        1,
+        1.2,
+        1
+      ],
+      "route": "H"
+    },
+    "TER-ANT-AER-S": {
+      "path": "Models/Terran/Shared/TER-ANT-AER-S/TER-ANT-AER-S_hq_v01.glb",
+      "size": [
+        0.5,
+        1.5,
+        0.5
+      ],
+      "route": "H"
+    },
+    "TER-ANT-AER-M": {
+      "path": "Models/Terran/Shared/TER-ANT-AER-M/TER-ANT-AER-M_hq_v01.glb",
+      "size": [
+        0.5,
+        2.5,
+        0.5
+      ],
+      "route": "H"
+    }
+  },
+  "instances": [
+    {
+      "id": "base",
+      "asset": "base",
+      "group": "base",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "glz-band-front-l",
+      "asset": "TER-GLZ-BND-M",
+      "group": "command glazing",
+      "position": [
+        -4,
+        21,
+        14
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "size": [
+        4,
+        1.5,
+        0.5
+      ],
+      "visible": true
+    },
+    {
+      "id": "glz-band-front-r",
+      "asset": "TER-GLZ-BND-M",
+      "group": "command glazing",
+      "position": [
+        4,
+        21,
+        14
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "glz-band-left",
+      "asset": "TER-GLZ-BND-M",
+      "group": "command glazing",
+      "position": [
+        -12,
+        21,
+        2
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "glz-band-right",
+      "asset": "TER-GLZ-BND-M",
+      "group": "command glazing",
+      "position": [
+        12,
+        21,
+        2
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    },
+    {
+      "id": "glz-corner-front-l",
+      "asset": "TER-GLZ-BND-CNR",
+      "group": "command glazing",
+      "position": [
+        -10,
+        21,
+        12.5
+      ],
+      "rotation": [
+        0,
+        45,
+        0
+      ]
+    },
+    {
+      "id": "glz-corner-front-r",
+      "asset": "TER-GLZ-BND-CNR",
+      "group": "command glazing",
+      "position": [
+        10,
+        21,
+        12.5
+      ],
+      "rotation": [
+        0,
+        -45,
+        0
+      ]
+    },
+    {
+      "id": "glz-corner-back-l",
+      "asset": "TER-GLZ-BND-CNR",
+      "group": "command glazing",
+      "position": [
+        -10,
+        21,
+        -12.5
+      ],
+      "rotation": [
+        0,
+        135,
+        0
+      ]
+    },
+    {
+      "id": "glz-corner-back-r",
+      "asset": "TER-GLZ-BND-CNR",
+      "group": "command glazing",
+      "position": [
+        10,
+        21,
+        -12.5
+      ],
+      "rotation": [
+        0,
+        -135,
+        0
+      ]
+    },
+    {
+      "id": "main-portal",
+      "asset": "TER-DOR-PRT-L",
+      "group": "front access",
+      "position": [
+        0,
+        0,
+        28
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "main-ramp",
+      "asset": "TER-ACC-RMP-L",
+      "group": "front access",
+      "position": [
+        0,
+        0,
+        33
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "roof-fan-l",
+      "asset": "TER-VNT-FAN-L",
+      "group": "roof service",
+      "position": [
+        -18,
+        16,
+        4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "roof-fan-r",
+      "asset": "TER-VNT-FAN-L",
+      "group": "roof service",
+      "position": [
+        18,
+        16,
+        4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-01",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        4,
+        -18
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-02",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        4,
+        -13
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-03",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        4,
+        -8
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-04",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        4,
+        -3
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-05",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        8,
+        2
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-06",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        8,
+        7
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-07",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        8,
+        12
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-elbow-08",
+      "asset": "TER-PIP-ELB-M",
+      "group": "right service",
+      "position": [
+        35,
+        8,
+        17
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-tee-front",
+      "asset": "TER-PIP-TEE-M",
+      "group": "right service",
+      "position": [
+        32,
+        10,
+        9
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "pipe-tee-back",
+      "asset": "TER-PIP-TEE-M",
+      "group": "right service",
+      "position": [
+        32,
+        10,
+        -9
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-01",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -25,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-02",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -20,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-03",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -15,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-04",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        15,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-05",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        20,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-front-06",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        25,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-01",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -25,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-02",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -20,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-03",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        -15,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-04",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        15,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-05",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        20,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-back-06",
+      "asset": "TER-ACC-RAL-M",
+      "group": "deck rails",
+      "position": [
+        25,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-outer-fl",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "deck rails",
+      "position": [
+        -28,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-outer-fr",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "deck rails",
+      "position": [
+        28,
+        15.5,
+        20
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-outer-bl",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "deck rails",
+      "position": [
+        -28,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-outer-br",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "deck rails",
+      "position": [
+        28,
+        15.5,
+        -20
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-upper-fl",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "upper rails",
+      "position": [
+        -11,
+        27,
+        12
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-upper-fr",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "upper rails",
+      "position": [
+        11,
+        27,
+        12
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-upper-bl",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "upper rails",
+      "position": [
+        -11,
+        27,
+        -12
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "id": "rail-corner-upper-br",
+      "asset": "TER-ACC-RAL-CNR",
+      "group": "upper rails",
+      "position": [
+        11,
+        27,
+        -12
+      ],
+      "rotation": [
+        0,
+        180,
+        0
+      ]
+    },
+    {
+      "id": "aerial-small-01",
+      "asset": "TER-ANT-AER-S",
+      "group": "command roof",
+      "position": [
+        -6,
+        35,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "aerial-small-02",
+      "asset": "TER-ANT-AER-S",
+      "group": "command roof",
+      "position": [
+        6,
+        35,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "aerial-small-03",
+      "asset": "TER-ANT-AER-S",
+      "group": "command roof",
+      "position": [
+        -2,
+        35,
+        -4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "aerial-small-04",
+      "asset": "TER-ANT-AER-S",
+      "group": "command roof",
+      "position": [
+        2,
+        35,
+        -4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "aerial-medium-01",
+      "asset": "TER-ANT-AER-M",
+      "group": "command roof",
+      "position": [
+        -8,
+        35,
+        -4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "aerial-medium-02",
+      "asset": "TER-ANT-AER-M",
+      "group": "command roof",
+      "position": [
+        8,
+        35,
+        -4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

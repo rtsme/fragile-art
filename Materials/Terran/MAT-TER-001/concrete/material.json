@@ -1,0 +1,12 @@
+{
+  "schema": "fragile-art-pbr-v1",
+  "name": "MAT-TER-001_CONCRETE",
+  "tile_size": 2048,
+  "source": "Materials/Terran/MAT-TER-001/Source/MAT-TER-001_concrete_base-color-source_v01.png",
+  "base_color": "MAT-TER-001_concrete_base_color_v01.png",
+  "normal": "MAT-TER-001_concrete_normal_v01.png",
+  "metallic_roughness": "MAT-TER-001_concrete_metallic_roughness_v01.png",
+  "emission": "MAT-TER-001_concrete_emission_v01.png",
+  "roughness": 0.88,
+  "metallic": 0.0
+}

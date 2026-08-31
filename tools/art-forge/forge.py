@@ -1,9 +1,7 @@
-"""
-Art Forge - a small local UI for turning 2D concept art into 3D meshes.
+"""Art Forge - browse art, inspect GLB/GLTF models and run 3D generation.
 
-Point it at a folder of reference images, pick one, press Forge. It drives the
-Modly backend (FastAPI on 127.0.0.1:8765) through Modly's own CLI, so the
-generation path is exactly the one Modly uses itself.
+The viewer and Meshy backend are standalone. Modly is optional and is used only
+as the current adapter for a configured local generation model.
 
 Stdlib only - run with Python 3.12:  py -3.12 forge.py
 """
@@ -14,6 +12,7 @@ import mimetypes
 import os
 import shutil
 import socket
+import struct
 import subprocess
 import sys
 import tempfile
@@ -32,8 +31,12 @@ from urllib.parse import parse_qs, urlparse
 
 HERE = Path(__file__).resolve().parent
 
-MODLY_DIR = Path(os.environ.get("MODLY_DIR", r"C:\Users\major\Documents\Projects\modly"))
-MODLY_DATA = Path(os.environ.get("MODLY_DATA", r"C:\Users\major\modly-data"))
+# Modly is optional and deliberately has no developer-specific default. A fresh
+# clone stays in viewer/Meshy-only mode until MODLY_DIR is configured.
+MODLY_DIR = Path(os.environ.get("MODLY_DIR", HERE / "_modly-not-configured")).expanduser()
+MODLY_DATA = Path(
+    os.environ.get("MODLY_DATA", Path.home() / ".fragile-art" / "modly-data")
+).expanduser()
 MODLY_API = os.environ.get("MODLY_API_URL", "http://127.0.0.1:8765")
 
 # The art repo root — Concepts/, References/ and Models/ sit directly under it.
@@ -41,6 +44,7 @@ ART_ROOT = Path(os.environ.get("ART_ROOT", HERE.parent.parent))
 MODEL_ID = os.environ.get("MODLY_MODEL_ID", "hunyuan3d-mini/generate")
 
 FORGE_PORT = int(os.environ.get("FORGE_PORT", "8770"))
+APP_VERSION = "1.2.0"
 
 CHECK_VIEWS = HERE.parent / "check-views.py"
 
@@ -50,6 +54,7 @@ API_PY = API_DIR / ".venv" / "Scripts" / "python.exe"
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
 MESH_EXTS = {".glb", ".gltf"}
+ASSEMBLY_SUFFIX = ".assembly.json"
 VENDOR = HERE / "vendor"
 
 # Meshy cloud backend. The key is read from the environment or a local file that
@@ -66,6 +71,16 @@ BACKEND_BOOT_TIMEOUT = 120
 def python312() -> str:
     """The interpreter used to run Modly's CLI. The CLI is stdlib-only."""
     return sys.executable
+
+
+def local_available() -> bool:
+    """Whether the optional Modly-powered local generator is installed."""
+    return CLI.is_file() and API_PY.is_file()
+
+
+def helper_python() -> str:
+    """Use Modly's environment when present, otherwise Art Forge's Python."""
+    return str(API_PY if API_PY.is_file() else Path(sys.executable))
 
 
 # --------------------------------------------------------------------------- #
@@ -125,6 +140,8 @@ JOB = Job()
 
 
 def backend_up(timeout: float = 2.0) -> bool:
+    if not local_available():
+        return False
     try:
         with urllib.request.urlopen(f"{MODLY_API}/health", timeout=timeout) as r:
             return r.status == 200
@@ -140,10 +157,13 @@ def port_busy(port: int) -> bool:
 
 def start_backend() -> tuple[bool, str]:
     """Boot Modly's FastAPI backend with the same env Electron would give it."""
+    if not local_available():
+        return False, (
+            "Local generation is unavailable because Modly is not installed. "
+            "The Art Forge viewer and Meshy generator do not require Modly."
+        )
     if backend_up():
         return True, "already running"
-    if not API_PY.exists():
-        return False, f"Modly api venv missing: {API_PY}"
 
     env = {
         **os.environ,
@@ -316,8 +336,6 @@ def _prepare_image(path: Path, max_px: int = 2048) -> Path:
     1024px was over-aggressive and cost real fidelity. Falls back to the original
     if Pillow isn't reachable.
     """
-    if not API_PY.exists():
-        return path
     out_dir = Path(tempfile.gettempdir()) / "art-forge-upload"
     out_dir.mkdir(parents=True, exist_ok=True)
     dst = out_dir / (path.stem + ".jpg")
@@ -338,7 +356,7 @@ def _prepare_image(path: Path, max_px: int = 2048) -> Path:
     )
     try:
         r = subprocess.run(
-            [str(API_PY), "-c", snippet, str(path), str(dst), str(max_px)],
+            [helper_python(), "-c", snippet, str(path), str(dst), str(max_px)],
             capture_output=True, text=True, timeout=120,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
@@ -481,13 +499,13 @@ def check_views(images: list[Path]) -> dict:
 
     Independently generated views often disagree on the subject's size, and the
     reconstructor smears detail where they conflict. Surfaced in the UI before
-    a generation is paid for. Needs Pillow, so it runs in Modly's api venv.
+    a generation is paid for. Uses Art Forge's Python when Modly is absent.
     """
-    if not API_PY.exists() or not CHECK_VIEWS.exists() or len(images) < 2:
+    if not CHECK_VIEWS.exists() or len(images) < 2:
         return {"ok": True, "issues": []}
     try:
         r = subprocess.run(
-            [str(API_PY), str(CHECK_VIEWS), "--json", *[str(p) for p in images]],
+            [helper_python(), str(CHECK_VIEWS), "--json", *[str(p) for p in images]],
             capture_output=True, text=True, timeout=120,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
@@ -523,25 +541,61 @@ def run_meshy_job(images: list[Path], output: Path, opts: dict) -> None:
 
 
 def mesh_stats(path: Path) -> dict | None:
-    """Face/vertex counts, read with Modly's api venv (it already has trimesh)."""
-    if not API_PY.exists() or not path.exists():
+    """Read basic GLB/GLTF statistics without Modly or third-party packages."""
+    if not path.exists():
         return None
-    snippet = (
-        "import json,sys,trimesh;"
-        "s=trimesh.load(sys.argv[1]);"
-        "m=s.to_mesh() if hasattr(s,'to_mesh') else s;"
-        "print(json.dumps({'vertices':len(m.vertices),'faces':len(m.faces),"
-        "'watertight':bool(m.is_watertight)}))"
-    )
     try:
-        out = subprocess.run(
-            [str(API_PY), "-c", snippet, str(path)],
-            capture_output=True, text=True, timeout=180,
-            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-        )
-        data = json.loads(out.stdout.strip())
-        data["size_mb"] = round(path.stat().st_size / (1024 * 1024), 2)
-        return data
+        if path.suffix.lower() == ".gltf":
+            document = json.loads(path.read_text(encoding="utf-8"))
+        else:
+            with path.open("rb") as fh:
+                magic, version, _ = struct.unpack("<4sII", fh.read(12))
+                if magic != b"glTF" or version != 2:
+                    return None
+                document = None
+                while header := fh.read(8):
+                    length, kind = struct.unpack("<II", header)
+                    payload = fh.read(length)
+                    if kind == 0x4E4F534A:  # JSON
+                        document = json.loads(payload.decode("utf-8").rstrip("\x00 \t\r\n"))
+                        break
+                if document is None:
+                    return None
+
+        accessors = document.get("accessors") or []
+        primitives = [
+            primitive
+            for mesh in (document.get("meshes") or [])
+            for primitive in (mesh.get("primitives") or [])
+        ]
+        vertices = 0
+        faces = 0
+        for primitive in primitives:
+            position = (primitive.get("attributes") or {}).get("POSITION")
+            if position is None or position >= len(accessors):
+                continue
+            vertex_count = int(accessors[position].get("count") or 0)
+            vertices += vertex_count
+            index = primitive.get("indices")
+            element_count = (
+                int(accessors[index].get("count") or 0)
+                if index is not None and index < len(accessors)
+                else vertex_count
+            )
+            mode = int(primitive.get("mode", 4))
+            if mode == 4:       # TRIANGLES
+                faces += element_count // 3
+            elif mode in (5, 6):  # TRIANGLE_STRIP / TRIANGLE_FAN
+                faces += max(0, element_count - 2)
+
+        return {
+            "vertices": vertices,
+            "faces": faces,
+            "watertight": None,
+            "meshes": len(document.get("meshes") or []),
+            "primitives": len(primitives),
+            "size_mb": round(path.stat().st_size / (1024 * 1024), 2),
+        }
     except Exception:
         return None
 
@@ -586,7 +640,7 @@ def scan(folder: Path) -> dict:
     if not folder.exists() or not folder.is_dir():
         return {"ok": False, "error": f"Not a folder: {folder}"}
 
-    subdirs, images, meshes = [], [], []
+    subdirs, images, meshes, assemblies = [], [], [], []
     try:
         entries = sorted(folder.iterdir(), key=lambda p: p.name.lower())
     except OSError as exc:
@@ -600,10 +654,86 @@ def scan(folder: Path) -> dict:
             images.append({"name": p.name, "path": str(p), "size": p.stat().st_size})
         elif p.suffix.lower() in MESH_EXTS:
             meshes.append({"name": p.name, "path": str(p), "size": p.stat().st_size})
+        elif p.name.lower().endswith(ASSEMBLY_SUFFIX):
+            summary = {"name": p.name, "path": str(p), "size": p.stat().st_size,
+                       "title": p.name.removesuffix(ASSEMBLY_SUFFIX), "instances": None}
+            try:
+                document = json.loads(p.read_text(encoding="utf-8"))
+                summary["title"] = document.get("name") or summary["title"]
+                summary["instances"] = len(document.get("instances") or [])
+            except Exception:
+                pass
+            assemblies.append(summary)
 
     parent = str(folder.parent) if folder.parent != folder else None
     return {"ok": True, "path": str(folder), "parent": parent,
-            "subdirs": subdirs, "images": images, "meshes": meshes}
+            "subdirs": subdirs, "images": images, "meshes": meshes,
+            "assemblies": assemblies}
+
+
+def _inside_art_root(path: Path) -> Path:
+    resolved = path.resolve()
+    resolved.relative_to(ART_ROOT.resolve())
+    return resolved
+
+
+def assembly_document(path: Path) -> dict:
+    """Load and validate an Art Forge assembly, adding resolved model paths for the UI."""
+    path = _inside_art_root(path)
+    if not path.is_file() or not path.name.lower().endswith(ASSEMBLY_SUFFIX):
+        raise ValueError("Not an Art Forge .assembly.json file")
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document.get("schema") != "art-forge-assembly-v1":
+        raise ValueError("Unsupported assembly schema")
+    assets = document.get("assets")
+    instances = document.get("instances")
+    if not isinstance(assets, dict) or not isinstance(instances, list):
+        raise ValueError("Assembly needs assets and instances")
+    if len(instances) > 500:
+        raise ValueError("Assembly exceeds the 500-instance preview limit")
+
+    missing = []
+    for asset_id, asset in assets.items():
+        if not isinstance(asset, dict) or not asset.get("path"):
+            raise ValueError(f"Asset {asset_id!r} has no path")
+        source = Path(asset["path"])
+        if not source.is_absolute():
+            source = ART_ROOT / source
+        try:
+            source = _inside_art_root(source)
+        except ValueError as exc:
+            raise ValueError(f"Asset {asset_id!r} points outside the art repository") from exc
+        if source.suffix.lower() not in MESH_EXTS:
+            raise ValueError(f"Asset {asset_id!r} is not a GLB/GLTF model")
+        asset["_resolved_path"] = str(source)
+        if not source.is_file():
+            missing.append(asset_id)
+
+    for instance in instances:
+        if not isinstance(instance, dict) or instance.get("asset") not in assets:
+            raise ValueError("Every instance must reference a defined asset")
+        for field in ("position", "rotation"):
+            value = instance.get(field, [0, 0, 0])
+            if not isinstance(value, list) or len(value) != 3:
+                raise ValueError(f"Instance {instance.get('id', '?')} has an invalid {field}")
+    return {"document": document, "missing_assets": missing}
+
+
+def save_assembly(path: Path, document: dict) -> None:
+    """Persist editable transforms while keeping server-only resolved paths out of the file."""
+    path = _inside_art_root(path)
+    if not path.name.lower().endswith(ASSEMBLY_SUFFIX):
+        raise ValueError("Assembly filename must end with .assembly.json")
+    clean = json.loads(json.dumps(document))
+    for asset in (clean.get("assets") or {}).values():
+        if isinstance(asset, dict):
+            asset.pop("_resolved_path", None)
+    if clean.get("schema") != "art-forge-assembly-v1":
+        raise ValueError("Unsupported assembly schema")
+    if not isinstance(clean.get("assets"), dict) or not isinstance(clean.get("instances"), list):
+        raise ValueError("Assembly needs assets and instances")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(clean, indent=2) + "\n", encoding="utf-8")
 
 
 def gallery(root: Path, limit: int = 400) -> dict:
@@ -717,11 +847,14 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if route == "/api/state":
-            up = backend_up()
+            available = local_available()
+            up = backend_up() if available else False
             self.send_json({
                 "backend": up,
+                "local_available": available,
                 "model": model_state() if up else {},
                 "art_root": str(ART_ROOT),
+                "app_version": APP_VERSION,
                 "model_id": MODEL_ID,
                 "meshy_key": bool(meshy_key()),
                 "meshy_max_images": MESHY_MAX_IMAGES,
@@ -737,6 +870,15 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/gallery":
             target = q.get("path", [str(ART_ROOT / "Concepts")])[0]
             self.send_json(gallery(Path(target)))
+            return
+
+        if route == "/api/assembly":
+            target = q.get("path", [""])[0]
+            try:
+                loaded = assembly_document(Path(target))
+                self.send_json({"ok": True, "path": str(Path(target).resolve()), **loaded})
+            except Exception as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
             return
 
         if route == "/api/thumb":
@@ -820,6 +962,14 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(check_views(images))
             return
 
+        if route == "/api/assembly/save":
+            try:
+                save_assembly(Path(body.get("path") or ""), body.get("document") or {})
+                self.send_json({"ok": True})
+            except Exception as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+            return
+
         if route == "/api/generate":
             with JOB.lock:
                 if JOB.status == "running":
@@ -861,6 +1011,12 @@ class Handler(BaseHTTPRequestHandler):
                 target = run_meshy_job
                 args = (images, output, opts)
             else:
+                if not local_available():
+                    self.send_json({"ok": False, "error":
+                                    "Local generation requires Modly, which is not installed. "
+                                    "Choose Meshy instead; browsing and the 3D viewer remain available."},
+                                   400)
+                    return
                 steps = int(body.get("steps") or 30)
                 octree = int(body.get("octree") or 380)
                 remesh = body.get("remesh") or "none"
@@ -891,15 +1047,11 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> int:
-    if not CLI.exists():
-        print(f"[forge] Modly CLI not found at {CLI}")
-        print("[forge] Set MODLY_DIR to your modly checkout.")
-        return 1
-
     if port_busy(FORGE_PORT):
         url = f"http://127.0.0.1:{FORGE_PORT}/"
         print(f"[forge] Already running at {url}")
-        webbrowser.open(url)
+        if not os.environ.get("FORGE_NO_BROWSER"):
+            webbrowser.open(url)
         return 0
 
     server = ThreadingHTTPServer(("127.0.0.1", FORGE_PORT), Handler)
@@ -908,7 +1060,10 @@ def main() -> int:
     print("  =========")
     print(f"  UI        : {url}")
     print(f"  Art root  : {ART_ROOT}")
-    print(f"  Modly API : {MODLY_API}")
+    if local_available():
+        print(f"  Local gen : available via {MODLY_API}")
+    else:
+        print("  Local gen : unavailable (Modly not installed; viewer and Meshy still work)")
     print("\n  Close this window to stop the tool.\n")
     if not os.environ.get("FORGE_NO_BROWSER"):
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()

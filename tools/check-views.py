@@ -15,6 +15,7 @@ Exit code is 1 if any check fails, so it can gate a script.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -54,6 +55,12 @@ def spread(values: list[float]) -> float:
     return 0.0 if hi == 0 else (hi - lo) / hi * 100.0
 
 
+def view_role(name: str) -> str | None:
+    """Read front/back/left/right from a conventional reference filename."""
+    match = re.search(r"(?:^|_)(front|back|left|right)(?:_|\.)", name.lower())
+    return match.group(1) if match else None
+
+
 def check(paths: list[Path]) -> dict:
     views = [v for v in (silhouette(p) for p in paths) if v]
     issues: list[dict] = []
@@ -71,17 +78,28 @@ def check(paths: list[Path]) -> dict:
             "views use different canvas sizes: "
             + ", ".join(f"{w}x{h}" for w, h in sorted(canvases)))
 
-    # 2. Subject scale — the strongest signal, and the one that broke BLD-CMD-001.
+    # 2. Subject scale — height should agree across every upright view. Width is
+    # compared only between opposing elevations: a rectangular object's front
+    # width and side depth are physically different and must not be compared.
     hs = spread([v["height"] for v in views])
-    ws = spread([v["width"] for v in views])
-    for label, pct in (("height", hs), ("width", ws)):
+    scale_checks = [("height (all views)", hs)]
+    roles = {view_role(v["name"]): v for v in views}
+    for label, pair in (("width (front/back)", ("front", "back")),
+                        ("width (left/right)", ("left", "right"))):
+        pair_views = [roles.get(role) for role in pair]
+        if all(pair_views):
+            scale_checks.append((label, spread([v["width"] for v in pair_views])))
+    if len(scale_checks) == 1 and len(views) <= 2:
+        scale_checks.append(("width", spread([v["width"] for v in views])))
+
+    for label, pct in scale_checks:
         if pct >= FAIL_PCT:
             add("fail", f"subject {label}",
-                f"silhouette {label} varies by {pct:.1f}% across views "
+                f"silhouette {label} varies by {pct:.1f}% "
                 f"(should be under {WARN_PCT:.0f}%)")
         elif pct >= WARN_PCT:
             add("warn", f"subject {label}",
-                f"silhouette {label} varies by {pct:.1f}% across views")
+                f"silhouette {label} varies by {pct:.1f}%")
 
     # 3. Centring — a drifting subject shifts the implied camera between views.
     for axis in ("cx", "cy"):

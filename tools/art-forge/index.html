@@ -101,6 +101,12 @@
   .meshrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .meshrow .sz{color:var(--muted);font-size:12px}
   .meshrow .vw{font-size:11px;color:var(--accent)}
+  .assemblyrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+               background:#1d1b16;border:1px solid #4a3b22;cursor:pointer}
+  .assemblyrow:hover{border-color:var(--accent)}
+  .assemblyrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .assemblyrow .ct{color:var(--muted);font-size:12px}
+  .assemblyrow .vw{font-size:11px;color:var(--accent)}
   .sectionhead{margin:16px 0 4px;font-size:12px;text-transform:uppercase;
                letter-spacing:.9px;color:var(--muted);font-weight:600}
 
@@ -118,6 +124,22 @@
   #vloading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
             color:var(--muted);font-size:13px;pointer-events:none}
   button.on{background:var(--accent);border-color:var(--accent);color:#1a1200}
+  #assemblyPanel{position:absolute;top:14px;right:14px;width:min(330px,calc(100% - 28px));
+                 max-height:calc(100% - 28px);overflow:auto;background:rgba(22,26,33,.96);
+                 border:1px solid var(--line);border-radius:10px;padding:12px;
+                 box-shadow:0 12px 36px rgba(0,0,0,.4)}
+  #assemblyPanel h3{margin:0 0 9px;font-size:12px;text-transform:uppercase;
+                    letter-spacing:.8px;color:var(--muted)}
+  #assemblyPanel select{margin-bottom:8px}
+  .apmeta{font-size:11px;color:var(--muted);margin:0 0 10px;overflow-wrap:anywhere}
+  .aprow{display:grid;grid-template-columns:58px repeat(3,1fr);gap:6px;align-items:center;margin:7px 0}
+  .aprow label{font-size:11px;color:var(--muted)}
+  .aprow input{padding:6px 7px;min-width:0}
+  .apaxis{display:grid;grid-template-columns:58px repeat(3,1fr);gap:6px;color:var(--muted);
+          font-size:10px;text-align:center;margin-top:-3px}
+  .apcheck{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin:8px 0}
+  .apactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .apstatus{font-size:11px;color:var(--muted);margin-top:8px;min-height:16px}
 
   .warnbox{margin-top:10px;padding:9px 11px;border-radius:8px;font-size:12px;
            border:1px solid #6b5320;background:#241d10;color:#e8c98d}
@@ -141,7 +163,7 @@
 <header>
   <h1>Art Forge</h1>
   <span class="sub">concept art &rarr; 3D mesh</span>
-  <span class="pill"><span id="dot" class="dot"></span><span id="backendTxt">checking backend…</span></span>
+  <span class="pill"><span id="dot" class="dot"></span><span id="backendTxt">starting Art Forge…</span></span>
 </header>
 
 <main>
@@ -163,6 +185,10 @@
       <div class="sectionhead">Meshes in this folder</div>
       <div class="meshlist" id="meshes"></div>
     </div>
+    <div id="assemblySection" hidden>
+      <div class="sectionhead">Assemblies in this folder</div>
+      <div class="meshlist" id="assemblies"></div>
+    </div>
   </section>
 
   <!-- ── right: forge it ─────────────────────────────────────────────── -->
@@ -171,7 +197,7 @@
     <div class="row" style="margin-bottom:12px">
       <label for="backend">Generator</label>
       <select id="backend">
-        <option value="local" selected>Local — Hunyuan3D (free, 1 image)</option>
+        <option value="local" selected>Local — configured model (1 image)</option>
         <option value="meshy">Meshy — cloud (paid, up to 4 images, textured)</option>
       </select>
     </div>
@@ -247,7 +273,7 @@
         <label for="seed">Seed</label>
         <input type="number" id="seed" placeholder="random" />
       </div>
-      <div class="hint localOpt">Textures are off — the ROCm build has no CUDA kernels for the paint pass.</div>
+      <div class="hint localOpt">Art Forge currently requests geometry-only output from local models. Texture the reviewed base in a later pass.</div>
 
       <div class="actions">
         <button class="primary" id="forge">Forge model</button>
@@ -276,11 +302,29 @@
       <button id="vwire">Wireframe</button>
       <button id="vgrid" class="on">Grid</button>
       <button id="vspin">Spin</button>
+      <button id="vparts" hidden>Parts</button>
       <button id="vreset">Reset view</button>
       <button id="vclose">Close</button>
     </span>
   </div>
-  <div id="vstage"><div id="vloading">loading…</div></div>
+  <div id="vstage">
+    <div id="vloading">loading…</div>
+    <aside id="assemblyPanel" hidden>
+      <h3>Assembly placement</h3>
+      <select id="apart"></select>
+      <div class="apmeta" id="apmeta"></div>
+      <div class="apaxis"><span></span><span>X</span><span>Y</span><span>Z</span></div>
+      <div class="aprow"><label>Position</label><input id="appx" type="number" step="0.1"><input id="appy" type="number" step="0.1"><input id="appz" type="number" step="0.1"></div>
+      <div class="aprow"><label>Rotation</label><input id="aprx" type="number" step="1"><input id="apry" type="number" step="1"><input id="aprz" type="number" step="1"></div>
+      <div class="aprow"><label>Size (m)</label><input id="apsx" type="number" step="0.1" min="0.01"><input id="apsy" type="number" step="0.1" min="0.01"><input id="apsz" type="number" step="0.1" min="0.01"></div>
+      <label class="apcheck"><input id="apvisible" type="checkbox" checked> visible in preview</label>
+      <div class="apactions">
+        <button id="apapply">Apply transform</button>
+        <button class="primary" id="apsave">Save layout</button>
+      </div>
+      <div class="apstatus" id="apstatus">Double-click a part in the viewport to select it.</div>
+    </aside>
+  </div>
 </div>
 
 <script type="importmap">
@@ -294,6 +338,8 @@ import { OrbitControls } from '/vendor/jsm/controls/OrbitControls.js';
 
 const stage = document.getElementById('vstage');
 let renderer, scene, camera, controls, grid, root, raf, spin = false, wire = false;
+let viewerMode = 'mesh', loadToken = 0, assemblyPath = '', assemblyData = null;
+let assemblyObjects = [], assemblySources = new Map(), selectedAssemblyIndex = -1, selectionBox = null;
 
 function init(){
   renderer = new THREE.WebGLRenderer({antialias:true});
@@ -338,84 +384,284 @@ function loop(){
 }
 
 let lastSize = new THREE.Vector3(1,1,1);
+const degrees = THREE.MathUtils.degToRad;
 
-/** Recentre the model over the origin and sit it on the grid. Once, at load. */
 function centre(obj){
   const box  = new THREE.Box3().setFromObject(obj);
   const size = box.getSize(new THREE.Vector3());
   const ctr  = box.getCenter(new THREE.Vector3());
   obj.position.x -= ctr.x;
   obj.position.z -= ctr.z;
-  obj.position.y += size.y / 2 - ctr.y;      // base sits on y=0
+  obj.position.y -= box.min.y;
   grid.scale.setScalar(Math.max(Math.max(size.x, size.y, size.z), 0.001) / 2.4);
   lastSize = size;
   return size;
 }
 
-/** Park the camera so the whole model is in shot. Safe to call repeatedly. */
 function frameCamera(){
   const r = Math.max(lastSize.x, lastSize.y, lastSize.z) || 1;
-  camera.position.set(r*1.5, r*1.05, r*1.7);
+  camera.position.set(r*1.35, r*.9, r*1.55);
   controls.target.set(0, lastSize.y/2, 0);
   controls.update();
+}
+
+function prepareMeshes(obj){
+  let tris = 0, verts = 0, textures = false;
+  obj.traverse(o => {
+    if(!o.isMesh) return;
+    const g = o.geometry;
+    verts += g.attributes.position.count;
+    tris += g.index ? g.index.count/3 : g.attributes.position.count/3;
+    if(!g.attributes.normal) g.computeVertexNormals();
+    const materials = [].concat(o.material || []);
+    const textured = materials.some(m => m && m.map);
+    if(textured){
+      materials.forEach(m => { if(m){ m.side = THREE.DoubleSide; m.wireframe = wire; } });
+      textures = true;
+    } else {
+      o.material = new THREE.MeshStandardMaterial({
+        color:0xb9bec7, metalness:0.15, roughness:0.72,
+        flatShading:false, side:THREE.DoubleSide, wireframe:wire});
+    }
+  });
+  return {tris, verts, textures};
+}
+
+function setWireframe(obj, enabled){
+  if(!obj) return;
+  obj.traverse(o => {
+    if(!o.isMesh) return;
+    [].concat(o.material || []).forEach(m => { if(m) m.wireframe = enabled; });
+  });
+}
+
+function disposeTree(obj){
+  const geometries = new Set(), materials = new Set(), textures = new Set();
+  obj.traverse(node => {
+    if(node.geometry) geometries.add(node.geometry);
+    [].concat(node.material || []).forEach(material => {
+      if(!material) return;
+      materials.add(material);
+      Object.values(material).forEach(value => { if(value && value.isTexture) textures.add(value); });
+    });
+  });
+  textures.forEach(texture => texture.dispose());
+  materials.forEach(material => material.dispose());
+  geometries.forEach(geometry => geometry.dispose());
+}
+
+function clearViewerRoot(){
+  loadToken++;
+  if(selectionBox){ scene.remove(selectionBox); selectionBox.geometry.dispose();
+                    selectionBox.material.dispose(); selectionBox = null; }
+  if(root){ scene.remove(root); disposeTree(root); root = null; }
+  assemblyObjects = [];
+  assemblySources.clear();
+  assemblyData = null;
+  assemblyPath = '';
+  selectedAssemblyIndex = -1;
+  document.getElementById('assemblyPanel').hidden = true;
+  document.getElementById('vparts').hidden = true;
 }
 
 window.openViewer = function(path, name){
   document.getElementById('viewer').classList.add('on');
   document.getElementById('vname').textContent = name || path;
   document.getElementById('vstats').textContent = '';
+  document.getElementById('vloading').textContent = 'loading…';
   document.getElementById('vloading').style.display = 'flex';
   if(!renderer){ init(); loop(); }
   resize();
-
-  if(root){ scene.remove(root); disposeTree(root); root = null; }
+  clearViewerRoot();
+  viewerMode = 'mesh';
+  const token = ++loadToken;
 
   new GLTFLoader().load('/api/mesh?path=' + encodeURIComponent(path), gltf => {
-    root = gltf.scene;
-    let tris = 0, verts = 0, textures = false;
-    root.traverse(o => {
-      if(!o.isMesh) return;
-      const g = o.geometry;
-      verts += g.attributes.position.count;
-      tris  += g.index ? g.index.count/3 : g.attributes.position.count/3;
-      // Hunyuan3D exports position only — without normals a lit material renders black.
-      if(!g.attributes.normal) g.computeVertexNormals();
-      // Keep a real textured material (Meshy); only substitute clay for untextured sculpts.
-      const textured = o.material && o.material.map;
-      if(textured){
-        o.material.side = THREE.DoubleSide;
-        o.material.wireframe = wire;
-        textures = true;
-      } else {
-        o.material = new THREE.MeshStandardMaterial({
-          color:0xb9bec7, metalness:0.15, roughness:0.72,
-          flatShading:false, side:THREE.DoubleSide, wireframe:wire});
-      }
-    });
-    const pivot = new THREE.Group(); pivot.add(root); scene.add(pivot); root = pivot;
+    if(token !== loadToken) return;
+    const model = gltf.scene;
+    const stats = prepareMeshes(model);
+    const pivot = new THREE.Group(); pivot.add(model); scene.add(pivot); root = pivot;
     const size = centre(root);
     frameCamera();
     document.getElementById('vstats').textContent =
-      `${Math.round(tris).toLocaleString()} tris · ${verts.toLocaleString()} verts · ` +
+      `${Math.round(stats.tris).toLocaleString()} tris · ${stats.verts.toLocaleString()} verts · ` +
       `${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)} units · ` +
-      (textures ? 'textured' : 'untextured');
+      (stats.textures ? 'textured' : 'untextured');
     document.getElementById('vloading').style.display = 'none';
   }, undefined, err => {
-    document.getElementById('vloading').textContent = 'Failed to load: ' + err.message;
+    if(token === loadToken) document.getElementById('vloading').textContent = 'Failed to load: ' + err.message;
   });
 };
 
-function disposeTree(o){
-  o.traverse(n => { if(n.geometry) n.geometry.dispose();
-                    if(n.material) [].concat(n.material).forEach(m => m.dispose()); });
+function targetSize(instance, asset){
+  const value = instance.size || asset.size || [1,1,1];
+  return value.map(n => Math.max(Number(n) || .001, .001));
 }
 
-document.getElementById('vclose').onclick = () => {
-  document.getElementById('viewer').classList.remove('on');
+function applyInstanceTransform(index){
+  const instance = assemblyData.instances[index];
+  const asset = assemblyData.assets[instance.asset];
+  const object = assemblyObjects[index];
+  if(!object) return;
+  const pos = instance.position || [0,0,0], rot = instance.rotation || [0,0,0];
+  object.position.fromArray(pos.map(Number));
+  object.rotation.set(degrees(+rot[0]||0), degrees(+rot[1]||0), degrees(+rot[2]||0));
+  object.visible = instance.visible !== false;
+  const size = targetSize(instance, asset), source = object.userData.sourceSize;
+  object.userData.normalizer.scale.set(size[0]/source.x, size[1]/source.y, size[2]/source.z);
+  object.updateMatrixWorld(true);
+}
+
+function makeAssemblyInstance(instance, index){
+  const source = assemblySources.get(instance.asset);
+  const content = source.scene.clone(true);
+  content.position.x -= source.center.x;
+  content.position.y -= source.minY;
+  content.position.z -= source.center.z;
+  const normalizer = new THREE.Group(); normalizer.add(content);
+  const object = new THREE.Group(); object.add(normalizer);
+  object.name = instance.id || `${instance.asset}-${index+1}`;
+  object.userData.instanceIndex = index;
+  object.userData.normalizer = normalizer;
+  object.userData.sourceSize = source.size.clone();
+  root.add(object);
+  assemblyObjects[index] = object;
+  applyInstanceTransform(index);
+}
+
+function selectedValues(prefix){
+  return ['x','y','z'].map(axis => Number(document.getElementById(prefix+axis).value) || 0);
+}
+
+function selectAssemblyPart(index){
+  if(!assemblyData || !assemblyObjects[index]) return;
+  selectedAssemblyIndex = index;
+  const instance = assemblyData.instances[index], asset = assemblyData.assets[instance.asset];
+  document.getElementById('apart').value = String(index);
+  const pos = instance.position || [0,0,0], rot = instance.rotation || [0,0,0];
+  const size = targetSize(instance, asset);
+  ['x','y','z'].forEach((axis, i) => {
+    document.getElementById('app'+axis).value = pos[i];
+    document.getElementById('apr'+axis).value = rot[i];
+    document.getElementById('aps'+axis).value = size[i];
+  });
+  document.getElementById('apvisible').checked = instance.visible !== false;
+  const route = asset.route === 'H' ? 'H · reconstruction experiment' : asset.route;
+  document.getElementById('apmeta').textContent =
+    `${instance.asset} · ${instance.group || 'ungrouped'} · route ${route}`;
+  if(selectionBox){ scene.remove(selectionBox); selectionBox.geometry.dispose(); selectionBox.material.dispose(); }
+  selectionBox = new THREE.BoxHelper(assemblyObjects[index], 0xe8a33d);
+  scene.add(selectionBox);
+}
+
+function populateAssemblyInspector(){
+  const select = document.getElementById('apart');
+  select.innerHTML = assemblyData.instances.map((instance, index) =>
+    `<option value="${index}">${instance.id || instance.asset} · ${instance.asset}</option>`).join('');
+  document.getElementById('assemblyPanel').hidden = false;
+  document.getElementById('vparts').hidden = false;
+  document.getElementById('vparts').classList.add('on');
+  selectAssemblyPart(0);
+}
+
+function applyAssemblyEdits(){
+  if(selectedAssemblyIndex < 0) return;
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  instance.position = selectedValues('app');
+  instance.rotation = selectedValues('apr');
+  instance.size = selectedValues('aps').map(n => Math.max(n, .01));
+  instance.visible = document.getElementById('apvisible').checked;
+  applyInstanceTransform(selectedAssemblyIndex);
+  if(selectionBox){ selectionBox.visible = instance.visible; selectionBox.update(); }
+  document.getElementById('apstatus').textContent = 'Transform applied locally. Save layout to keep it.';
+}
+
+async function saveAssembly(){
+  applyAssemblyEdits();
+  const status = document.getElementById('apstatus');
+  status.textContent = 'Saving…';
+  const response = await fetch('/api/assembly/save', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({path:assemblyPath, document:assemblyData})});
+  const result = await response.json();
+  status.textContent = result.ok ? 'Layout saved.' : `Save failed: ${result.error || 'unknown error'}`;
+}
+
+window.openAssembly = async function(path, name){
+  document.getElementById('viewer').classList.add('on');
+  document.getElementById('vname').textContent = name || path;
+  document.getElementById('vstats').textContent = '';
+  document.getElementById('vloading').textContent = 'reading assembly…';
+  document.getElementById('vloading').style.display = 'flex';
+  if(!renderer){ init(); loop(); }
+  resize();
+  clearViewerRoot();
+  viewerMode = 'assembly';
+  const token = ++loadToken;
+  try{
+    const response = await fetch('/api/assembly?path=' + encodeURIComponent(path));
+    const payload = await response.json();
+    if(!payload.ok) throw new Error(payload.error || 'assembly could not be read');
+    if(payload.missing_assets && payload.missing_assets.length)
+      throw new Error('missing models: ' + payload.missing_assets.join(', '));
+    if(token !== loadToken) return;
+    assemblyPath = payload.path;
+    assemblyData = payload.document;
+    root = new THREE.Group(); root.name = assemblyData.name || 'assembly'; scene.add(root);
+    assemblyObjects = new Array(assemblyData.instances.length);
+
+    const entries = Object.entries(assemblyData.assets);
+    let loadedInstances = 0, renderedTris = 0, sourceVerts = 0;
+    for(let assetIndex=0; assetIndex<entries.length; assetIndex++){
+      const [assetId, asset] = entries[assetIndex];
+      document.getElementById('vloading').textContent =
+        `loading ${assetIndex+1}/${entries.length}: ${assetId} · ${loadedInstances}/${assemblyData.instances.length} parts`;
+      const gltf = await new GLTFLoader().loadAsync('/api/mesh?path=' + encodeURIComponent(asset._resolved_path));
+      if(token !== loadToken) return;
+      const stats = prepareMeshes(gltf.scene);
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      assemblySources.set(assetId, {scene:gltf.scene, size, center, minY:box.min.y, stats});
+      const instances = assemblyData.instances
+        .map((instance,index) => ({instance,index})).filter(item => item.instance.asset === assetId);
+      instances.forEach(item => makeAssemblyInstance(item.instance, item.index));
+      loadedInstances += instances.length;
+      renderedTris += stats.tris * instances.length;
+      sourceVerts += stats.verts;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    const box = new THREE.Box3().setFromObject(root);
+    lastSize = box.getSize(new THREE.Vector3());
+    grid.scale.setScalar(Math.max(lastSize.x,lastSize.y,lastSize.z,1)/2.4);
+    frameCamera();
+    populateAssemblyInspector();
+    document.getElementById('vstats').textContent =
+      `${assemblyData.instances.length} parts · ${entries.length} source GLBs · ` +
+      `${Math.round(renderedTris).toLocaleString()} rendered tris · normalized metres`;
+    document.getElementById('vloading').style.display = 'none';
+  }catch(error){
+    if(token === loadToken) document.getElementById('vloading').textContent = 'Failed to load assembly: ' + error.message;
+  }
 };
+
+function pickAssemblyPart(event){
+  if(viewerMode !== 'assembly' || !root) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const pointer = new THREE.Vector2(
+    ((event.clientX-rect.left)/rect.width)*2-1,
+    -((event.clientY-rect.top)/rect.height)*2+1);
+  const raycaster = new THREE.Raycaster(); raycaster.setFromCamera(pointer,camera);
+  const hit = raycaster.intersectObject(root,true)[0];
+  if(!hit) return;
+  let object = hit.object;
+  while(object && object !== root && object.userData.instanceIndex == null) object = object.parent;
+  if(object && object.userData.instanceIndex != null) selectAssemblyPart(object.userData.instanceIndex);
+}
+
+document.getElementById('vclose').onclick = () => document.getElementById('viewer').classList.remove('on');
 document.getElementById('vwire').onclick = e => {
-  wire = !wire; e.target.classList.toggle('on', wire);
-  if(root) root.traverse(o => { if(o.isMesh) o.material.wireframe = wire; });
+  wire = !wire; e.target.classList.toggle('on', wire); setWireframe(root, wire);
 };
 document.getElementById('vgrid').onclick = e => {
   grid.visible = !grid.visible; e.target.classList.toggle('on', grid.visible);
@@ -423,7 +669,15 @@ document.getElementById('vgrid').onclick = e => {
 document.getElementById('vspin').onclick = e => {
   spin = !spin; e.target.classList.toggle('on', spin);
 };
-document.getElementById('vreset').onclick = () => { if(root){ root.rotation.y = 0; frameCamera(); } };
+document.getElementById('vparts').onclick = e => {
+  const panel = document.getElementById('assemblyPanel'); panel.hidden = !panel.hidden;
+  e.target.classList.toggle('on', !panel.hidden);
+};
+document.getElementById('apart').onchange = e => selectAssemblyPart(Number(e.target.value));
+document.getElementById('apapply').onclick = applyAssemblyEdits;
+document.getElementById('apsave').onclick = saveAssembly;
+document.getElementById('vreset').onclick = () => { if(root){ root.rotation.set(0,0,0); frameCamera(); } };
+stage.addEventListener('dblclick', pickAssemblyPart);
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.getElementById('viewer').classList.remove('on');
 });
@@ -431,7 +685,8 @@ document.addEventListener('keydown', e => {
 
 <script>
 const $ = id => document.getElementById(id);
-let state = { path:null, selected:[], polling:null, meshyMax:4 };
+const UI_VERSION = '1.2.0';
+let state = { path:null, selected:[], polling:null, meshyMax:4, localAvailable:true };
 
 async function api(route, opts){ const r = await fetch(route, opts); return r.json(); }
 async function post(route, body){
@@ -473,6 +728,15 @@ async function load(path){
        <span class="sz">${(m.size/1048576).toFixed(1)} MB</span>
        <span class="vw">view →</span>
      </div>`).join('');
+
+  const assemblies = data.assemblies || [];
+  $('assemblySection').hidden = assemblies.length === 0;
+  $('assemblies').innerHTML = assemblies.map(a =>
+    `<div class="assemblyrow" data-path="${esc(a.path)}" data-name="${esc(a.title)}">
+       <span class="nm">${esc(a.title)}</span>
+       <span class="ct">${a.instances == null ? '?' : a.instances} parts</span>
+       <span class="vw">assemble →</span>
+     </div>`).join('');
 }
 
 /** Every asset under a subtree at once — the review pass over a whole concept sweep. */
@@ -482,6 +746,7 @@ async function loadGallery(root){
 
   $('subdirs').innerHTML = '';
   $('meshSection').hidden = true;
+  $('assemblySection').hidden = true;
   $('noImages').hidden = true;
   $('path').value = data.root;
   state.path = data.root;
@@ -602,16 +867,33 @@ function applyBackend(){
 async function refreshState(){
   const s = await api('/api/state');
   state.meshyMax = s.meshy_max_images || 4;
+  state.localAvailable = !!s.local_available;
+  if(s.app_version !== UI_VERSION){
+    $('dot').className = 'dot off';
+    $('backendTxt').textContent = 'server update pending · restart Art Forge';
+    $('backendTxt').title = `UI ${UI_VERSION} · server ${s.app_version || 'older than version reporting'}`;
+    return s;
+  }
+  $('backendTxt').removeAttribute('title');
+  const localOption = $('backend').querySelector('option[value="local"]');
+  if(localOption){
+    localOption.disabled = !state.localAvailable;
+    localOption.textContent = state.localAvailable
+      ? `Local — ${s.model_id || 'configured model'} (1 image)`
+      : 'Local — unavailable (configure Modly or import an external GLB)';
+  }
+  if(!state.localAvailable && $('backend').value === 'local') $('backend').value = 'meshy';
   if($('backend').value === 'meshy'){
     $('dot').className = 'dot ' + (s.meshy_key ? 'on' : 'off');
     $('backendTxt').textContent = s.meshy_key
-      ? 'Meshy key found'
-      : 'no Meshy key — set MESHY_API_KEY or create meshy.key';
+      ? 'viewer ready · Meshy key found'
+      : 'viewer ready · add a Meshy key to generate';
   } else {
     $('dot').className = 'dot ' + (s.backend ? 'on' : 'off');
     $('backendTxt').textContent = s.backend
       ? 'local backend up' + (s.model && s.model.loaded ? ' · model loaded' : '')
-      : 'local backend down — starting on first forge';
+      : (state.localAvailable ? 'local backend down — starting on first forge'
+                              : 'viewer ready · local generation unavailable');
   }
   return s;
 }
@@ -695,7 +977,7 @@ function showResult(j){
           ${m.faces ? `<b>faces</b><span>${m.faces.toLocaleString()}</span>
                        <b>vertices</b><span>${m.vertices.toLocaleString()}</span>
                        <b>size</b><span>${m.size_mb} MB</span>
-                       <b>watertight</b><span>${m.watertight}</span>` : ''}
+                       ${m.watertight == null ? '' : `<b>watertight</b><span>${m.watertight}</span>`}` : ''}
           ${r.backend === 'meshy' ? `<b>credits</b><span>${r.consumed_credits ?? '?'}</span>
                        <b>textures</b><span>${r.texture_maps || 0} PBR map(s)</span>` : ''}
           <b>took</b><span>${j.elapsed}s</span>
@@ -733,6 +1015,10 @@ $('subdirs').addEventListener('click', e => {
 $('meshes').addEventListener('click', e => {
   const r = e.target.closest('.meshrow');
   if(r) openViewer(r.dataset.path, r.dataset.name);
+});
+$('assemblies').addEventListener('click', e => {
+  const r = e.target.closest('.assemblyrow');
+  if(r) openAssembly(r.dataset.path, r.dataset.name);
 });
 $('gallery').onclick = () => loadGallery($('path').value.trim() || state.path);
 $('go').onclick    = () => load($('path').value.trim());

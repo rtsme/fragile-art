@@ -1,5 +1,11 @@
 # BLD-CMD-001 — Command Centre, regeneration prompts (v02)
 
+> **Pipeline status (2026-08-31):** the hero concept described here is the locked final appearance
+> target, not a mesh-generation input. The earlier full-building orthographic workflow below is
+> retained as failure history. New mesh work must use the body-only source and prompt recorded in
+> [`BLD-CMD-001-base-v01.md`](BLD-CMD-001-base-v01.md), then assemble the shared parts listed in
+> `Concepts/Terran/Buildings/BLD-CMD-001/BLD-CMD-001_assembly-manifest_v01.md`.
+
 Rewrite of the v01 prompts to satisfy [`../concept-rules-for-3d.md`](../concept-rules-for-3d.md).
 v01 produced a good drawing but a poor reconstruction: a noisy comms dish, lumps behind the
 window glass, blurred greeble, and four orthographic views that disagreed with each other by
