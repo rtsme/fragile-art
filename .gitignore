@@ -17,6 +17,10 @@ tools/art-forge/meshy.key
 **/*_hq_*.glb
 **/*_hq_*_textures/
 
+# Procedural kit output is deterministic — regenerate with tools/kitgen.py rather than
+# committing it. Approved parts get promoted out of _generated/ into the part's own folder.
+Kit/**/_generated/
+
 # References hold images only — a mesh in here is a misplaced generator output.
 References/**/*.glb
 References/**/*.gltf
