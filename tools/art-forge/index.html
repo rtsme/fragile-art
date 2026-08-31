@@ -125,6 +125,15 @@
   .warnbox b{color:inherit}
   .warnbox ul{margin:6px 0 0;padding-left:18px}
   .warnbox li{margin:2px 0}
+
+  /* gallery: every asset under a subtree at once */
+  .galleryAsset{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .galleryAsset:last-child{border-bottom:0}
+  .ghead{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+  .ghead b{font-size:13px}
+  .ghead .gpath{color:var(--muted);font-size:11px;flex:1;overflow:hidden;
+                text-overflow:ellipsis;white-space:nowrap}
+  .ghead .gopen{padding:4px 9px;font-size:11px}
 </style>
 </head>
 <body>
@@ -144,6 +153,7 @@
       <button id="go">Open</button>
       <button id="browse">Browse…</button>
       <button id="up" title="Parent folder">↑</button>
+      <button id="gallery" title="Review every asset under this folder at once">Gallery</button>
     </div>
     <div class="chips" id="subdirs"></div>
     <div class="grid" id="images"></div>
@@ -437,6 +447,7 @@ async function load(path){
 
   state.path = data.path;
   $('path').value = data.path;
+  $('images').style.display = '';            // gallery mode sets this to block
   $('up').disabled = !data.parent;
   $('up').dataset.parent = data.parent || '';
 
@@ -462,6 +473,45 @@ async function load(path){
        <span class="sz">${(m.size/1048576).toFixed(1)} MB</span>
        <span class="vw">view →</span>
      </div>`).join('');
+}
+
+/** Every asset under a subtree at once — the review pass over a whole concept sweep. */
+async function loadGallery(root){
+  const data = await api('/api/gallery?path=' + encodeURIComponent(root));
+  if(!data.ok){ $('images').innerHTML = `<div class="empty">${esc(data.error||'failed')}</div>`; return; }
+
+  $('subdirs').innerHTML = '';
+  $('meshSection').hidden = true;
+  $('noImages').hidden = true;
+  $('path').value = data.root;
+  state.path = data.root;
+
+  if(!data.assets.length){
+    $('images').innerHTML = '<div class="empty">No assets with images under here yet.</div>';
+    return;
+  }
+
+  $('images').style.display = 'block';
+  $('images').innerHTML =
+    `<div class="sectionhead">${data.assets.length} assets · ${data.count} images` +
+    (data.truncated ? ' (truncated)' : '') + `</div>` +
+    data.assets.map(a => `
+      <div class="galleryAsset">
+        <div class="ghead">
+          <b>${esc(a.asset)}</b>
+          <span class="gpath">${esc(a.group)}</span>
+          <button class="gopen" data-path="${esc(a.path)}">open folder</button>
+        </div>
+        <div class="grid">
+          ${a.images.map(im => `
+            <div class="tile" data-path="${esc(im.path)}" data-name="${esc(im.name)}">
+              <span class="badge"></span>
+              <img loading="lazy" src="/api/thumb?path=${encodeURIComponent(im.path)}" alt="">
+              <div class="cap" title="${esc(im.name)}">${esc(im.name)}</div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  paintSelection();
 }
 
 function esc(s){ return String(s).replace(/[&<>"']/g, c =>
@@ -670,6 +720,8 @@ async function reveal(p){ await post('/api/reveal', {path:p}); }
 
 // ── wiring ────────────────────────────────────────────────────────────
 $('images').addEventListener('click', e => {
+  const open = e.target.closest('.gopen');
+  if(open){ load(open.dataset.path); return; }
   const t = e.target.closest('.tile');
   if(t) toggleImage(t.dataset.path, t.dataset.name);
 });
@@ -682,6 +734,7 @@ $('meshes').addEventListener('click', e => {
   const r = e.target.closest('.meshrow');
   if(r) openViewer(r.dataset.path, r.dataset.name);
 });
+$('gallery').onclick = () => loadGallery($('path').value.trim() || state.path);
 $('go').onclick    = () => load($('path').value.trim());
 $('up').onclick    = () => { const p = $('up').dataset.parent; if(p) load(p); };
 $('browse').onclick= async () => { const r = await post('/api/browse',{start:state.path});

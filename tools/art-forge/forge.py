@@ -606,6 +606,38 @@ def scan(folder: Path) -> dict:
             "subdirs": subdirs, "images": images, "meshes": meshes}
 
 
+def gallery(root: Path, limit: int = 400) -> dict:
+    """
+    Every asset under a subtree, with its images — the review pass over a whole
+    concept sweep, instead of opening 49 folders one at a time.
+
+    An "asset" is any directory that directly contains images; its name is the
+    asset ID under the Concepts/References naming convention.
+    """
+    if not root.exists() or not root.is_dir():
+        return {"ok": False, "error": f"Not a folder: {root}"}
+
+    assets, total = [], 0
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if not d.startswith("."))
+        imgs = sorted(f for f in filenames if Path(f).suffix.lower() in IMAGE_EXTS)
+        if not imgs:
+            continue
+        here = Path(dirpath)
+        assets.append({
+            "asset": here.name,
+            "path": str(here),
+            "group": str(here.parent.relative_to(root)) if here != root else "",
+            "images": [{"name": n, "path": str(here / n)} for n in imgs],
+        })
+        total += len(imgs)
+        if total >= limit:
+            break
+
+    return {"ok": True, "root": str(root), "assets": assets,
+            "count": total, "truncated": total >= limit}
+
+
 def pick_folder(start: str) -> str | None:
     """Native folder dialog, run out-of-process so tkinter never fights our server."""
     code = (
@@ -700,6 +732,11 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/scan":
             target = q.get("path", [str(ART_ROOT)])[0]
             self.send_json(scan(Path(target)))
+            return
+
+        if route == "/api/gallery":
+            target = q.get("path", [str(ART_ROOT / "Concepts")])[0]
+            self.send_json(gallery(Path(target)))
             return
 
         if route == "/api/thumb":
