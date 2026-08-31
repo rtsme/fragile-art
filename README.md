@@ -18,6 +18,7 @@ irreversible.
   supplied first. Top and bottom are optional — produce them only when the roof or underside
   carries gameplay-readable detail. A combined tile sheet may be retained as an optional companion.
 - `Models/<Faction>/<Category>/<Asset ID>/` — generated meshes and cleaned source files.
+- `docs/prompts/` — per-asset generation prompts, written to satisfy the rules below.
 - `docs/` — the production tracker (`Fragile_Allegiance_Art_Asset_Production_Tracker.xlsx`),
   the single source of truth for asset status from style gate to final sign-off, and
   [`concept-rules-for-3d.md`](docs/concept-rules-for-3d.md) — **read this before drawing a
