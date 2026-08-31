@@ -42,6 +42,8 @@ MODEL_ID = os.environ.get("MODLY_MODEL_ID", "hunyuan3d-mini/generate")
 
 FORGE_PORT = int(os.environ.get("FORGE_PORT", "8770"))
 
+CHECK_VIEWS = HERE.parent / "check-views.py"
+
 CLI = MODLY_DIR / "tools" / "modly-cli" / "agent.py"
 API_DIR = MODLY_DIR / "api"
 API_PY = API_DIR / ".venv" / "Scripts" / "python.exe"
@@ -304,14 +306,15 @@ def _meshy_request(method: str, path: str, key: str, body: dict | None = None, t
         raise RuntimeError(f"Meshy {exc.code}: {detail}") from exc
 
 
-def _prepare_image(path: Path, max_px: int = 1024) -> Path:
+def _prepare_image(path: Path, max_px: int = 2048) -> Path:
     """
-    Downscale to a flattened JPEG before upload.
+    Flatten to a high-quality JPEG before upload, downscaling only if very large.
 
-    Four full-size concept PNGs base64 to ~10 MB, which makes Meshy time out with
-    "your request took too long to process". ~1 MB total sails through, and the
-    generator gains nothing from the extra pixels. Falls back to the original if
-    Pillow isn't reachable.
+    Four full-size PNGs base64 to ~10 MB, which is slow to upload and was present
+    on a request that timed out. 2048px at q92 lands around 2-3 MB for four images
+    while keeping the panel-line detail the generator actually reconstructs from —
+    1024px was over-aggressive and cost real fidelity. Falls back to the original
+    if Pillow isn't reachable.
     """
     if not API_PY.exists():
         return path
@@ -331,7 +334,7 @@ def _prepare_image(path: Path, max_px: int = 1024) -> Path:
         "else:\n"
         "    im = im.convert('RGB')\n"
         "im.thumbnail((mx, mx), Image.LANCZOS)\n"
-        "im.save(dst, 'JPEG', quality=88, optimize=True)\n"
+        "im.save(dst, 'JPEG', quality=92, optimize=True)\n"
     )
     try:
         r = subprocess.run(
@@ -389,12 +392,20 @@ def run_meshy(images: list[Path], output: Path, opts: dict) -> None:
         "should_texture":    bool(opts.get("texture", True)),
         "enable_pbr":        bool(opts.get("pbr", True)),
         "texture_resolution": opts.get("texture_resolution", "2k"),
-        "should_remesh":     True,
-        "topology":          opts.get("topology", "quad"),
-        "target_polycount":  int(opts.get("polycount", 30000)),
         "target_formats":    ["glb"],
         "ai_model":          opts.get("ai_model", "latest"),
     }
+
+    # Meshy's own guidance: "For the highest-quality model, we recommend setting
+    # should_remesh to false." Remeshing retopologises and decimates the result,
+    # which costs exactly the crisp mechanical detail these buildings are made of.
+    # Only send topology/polycount when the caller actually asked to remesh.
+    if opts.get("remesh"):
+        body["should_remesh"] = True
+        body["topology"] = opts.get("topology", "quad")
+        body["target_polycount"] = int(opts.get("polycount", 30000))
+    else:
+        body["should_remesh"] = False
     if opts.get("texture_prompt"):
         body["texture_prompt"] = str(opts["texture_prompt"])[:600]
 
@@ -462,6 +473,27 @@ def run_meshy(images: list[Path], output: Path, opts: dict) -> None:
             "consumed_credits": status.get("consumed_credits"),
             "texture_maps": maps,
         }
+
+
+def check_views(images: list[Path]) -> dict:
+    """
+    Do these reference views agree with each other?
+
+    Independently generated views often disagree on the subject's size, and the
+    reconstructor smears detail where they conflict. Surfaced in the UI before
+    a generation is paid for. Needs Pillow, so it runs in Modly's api venv.
+    """
+    if not API_PY.exists() or not CHECK_VIEWS.exists() or len(images) < 2:
+        return {"ok": True, "issues": []}
+    try:
+        r = subprocess.run(
+            [str(API_PY), str(CHECK_VIEWS), "--json", *[str(p) for p in images]],
+            capture_output=True, text=True, timeout=120,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        return json.loads(r.stdout.strip() or '{"ok": true, "issues": []}')
+    except Exception as exc:
+        return {"ok": True, "issues": [], "error": str(exc)}
 
 
 def run_meshy_job(images: list[Path], output: Path, opts: dict) -> None:
@@ -746,6 +778,11 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": True})
             return
 
+        if route == "/api/check-views":
+            images = [Path(p) for p in (body.get("images") or []) if Path(p).is_file()]
+            self.send_json(check_views(images))
+            return
+
         if route == "/api/generate":
             with JOB.lock:
                 if JOB.status == "running":
@@ -779,6 +816,7 @@ class Handler(BaseHTTPRequestHandler):
                     "texture":            bool(body.get("texture", True)),
                     "pbr":                bool(body.get("pbr", True)),
                     "texture_resolution": body.get("texture_resolution") or "2k",
+                    "remesh":             bool(body.get("remesh", False)),
                     "topology":           body.get("topology") or "quad",
                     "polycount":          int(body.get("polycount") or 30000),
                     "texture_prompt":     body.get("texture_prompt") or "",

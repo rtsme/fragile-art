@@ -19,8 +19,15 @@ irreversible.
   carries gameplay-readable detail. A combined tile sheet may be retained as an optional companion.
 - `Models/<Faction>/<Category>/<Asset ID>/` — generated meshes and cleaned source files.
 - `docs/` — the production tracker (`Fragile_Allegiance_Art_Asset_Production_Tracker.xlsx`),
-  the single source of truth for asset status from style gate to final sign-off.
-- `tools/art-forge/` — Art Forge, the local UI that drives generation. See its README.
+  the single source of truth for asset status from style gate to final sign-off, and
+  [`concept-rules-for-3d.md`](docs/concept-rules-for-3d.md) — **read this before drawing a
+  concept.** Constraints the generator imposes on what can be reconstructed: solid enclosed
+  volumes, flat opaque glass, no open lattice or thin elements. Every rule names the asset whose
+  failure produced it.
+- `tools/art-forge/` — Art Forge, the local UI that drives generation.
+- `tools/check-views.py` — verifies a set of orthographic references agree with each other
+  before you spend credits on them. Art Forge runs it automatically; run it by hand with
+  `python tools/check-views.py References/Terran/Buildings/<ASSET-ID>/*.png`.
 
 Use versioned filenames and retain superseded concepts when they document a reviewed design change.
 

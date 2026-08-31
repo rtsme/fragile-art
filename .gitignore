@@ -11,6 +11,12 @@ tools/art-forge/meshy.key
 **/*_ai_v*.glb
 **/*_experiment_*.glb
 
+# Max-quality (no-remesh) source sculpts and their 4K maps. These are the detail
+# source you retopo and bake from, not a shippable asset — ~85 MB of mesh plus
+# ~50 MB of textures each. Commit the decimated game asset instead.
+**/*_hq_*.glb
+**/*_hq_*_textures/
+
 # References hold images only — a mesh in here is a misplaced generator output.
 References/**/*.glb
 References/**/*.gltf

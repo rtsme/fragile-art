@@ -118,6 +118,13 @@
   #vloading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
             color:var(--muted);font-size:13px;pointer-events:none}
   button.on{background:var(--accent);border-color:var(--accent);color:#1a1200}
+
+  .warnbox{margin-top:10px;padding:9px 11px;border-radius:8px;font-size:12px;
+           border:1px solid #6b5320;background:#241d10;color:#e8c98d}
+  .warnbox.fail{border-color:#6b3030;background:#241212;color:#f0a9a9}
+  .warnbox b{color:inherit}
+  .warnbox ul{margin:6px 0 0;padding-left:18px}
+  .warnbox li{margin:2px 0}
 </style>
 </head>
 <body>
@@ -174,20 +181,17 @@
       <!-- ── Meshy-only options ─────────────────────────────────────── -->
       <div id="meshyOpts" hidden>
         <div class="row">
-          <label for="polycount">Polycount</label>
-          <select id="polycount">
-            <option value="5000">5,000 — RTS distance</option>
-            <option value="15000" selected>15,000 — balanced</option>
-            <option value="30000">30,000 — Meshy default</option>
-            <option value="100000">100,000 — hero asset</option>
+          <label for="meshMode">Mesh</label>
+          <select id="meshMode">
+            <option value="raw" selected>Max quality — no remesh</option>
+            <option value="30000">Game-ready — quad 30k</option>
+            <option value="15000">Game-ready — quad 15k</option>
+            <option value="5000">Low poly — quad 5k</option>
           </select>
         </div>
-        <div class="row">
-          <label for="topology">Topology</label>
-          <select id="topology">
-            <option value="quad" selected>quad — clean, editable</option>
-            <option value="triangle">triangle</option>
-          </select>
+        <div class="hint">
+          Meshy's own guidance: <b>no remesh</b> gives the highest-quality geometry.
+          Remeshing retopologises and decimates, which softens fine mechanical detail.
         </div>
         <div class="row">
           <label for="texres">Texture</label>
@@ -201,6 +205,7 @@
         <div class="hint" id="meshyHint">
           Select up to 4 images on the left — the <b>first</b> one you click is the front view.
         </div>
+        <div class="warnbox" id="viewWarn" hidden></div>
       </div>
 
       <!-- ── local-only options ────────────────────────────────────── -->
@@ -498,6 +503,40 @@ function paintSelection(){
   const n = state.selected.length, max = maxImages();
   const hint = $('meshyHint');
   if(hint) hint.innerHTML = `Selected <b>${n}</b> of ${max}. The <b>first</b> image you click is the front view.`;
+  checkViews();
+}
+
+/** Warn when reference views disagree — the reconstructor smears detail where they conflict. */
+let viewCheckToken = 0;
+async function checkViews(){
+  const box = $('viewWarn');
+  if(!box) return;
+  const meshy = $('backend').value === 'meshy';
+  if(!meshy || state.selected.length < 2){ box.hidden = true; return; }
+
+  const token = ++viewCheckToken;
+  const r = await post('/api/check-views', {images: state.selected.map(s => s.path)});
+  if(token !== viewCheckToken) return;            // a newer selection won
+
+  const issues = r.issues || [];
+  if(!issues.length){
+    box.hidden = false;
+    box.className = 'warnbox';
+    box.style.borderColor = '#2f6b4c';
+    box.style.background = '#0f1c16';
+    box.style.color = '#8fd6b0';
+    box.innerHTML = '<b>Views are consistent.</b> Same canvas, scale and centring.';
+    return;
+  }
+  const failed = issues.some(i => i.level === 'fail');
+  box.hidden = false;
+  box.removeAttribute('style');
+  box.className = 'warnbox' + (failed ? ' fail' : '');
+  box.innerHTML =
+    `<b>${failed ? 'These views disagree with each other.' : 'Minor view inconsistency.'}</b> ` +
+    `The generator smears detail where views conflict.<ul>` +
+    issues.map(i => `<li>${esc(i.rule)}: ${esc(i.detail)}</li>`).join('') +
+    `</ul>`;
 }
 
 function applyBackend(){
@@ -539,9 +578,11 @@ async function forge(){
   };
   if(backend === 'meshy'){
     const tex = $('texres').value;
+    const mode = $('meshMode').value;
     Object.assign(body, {
-      polycount: +$('polycount').value,
-      topology:  $('topology').value,
+      remesh:    mode !== 'raw',
+      polycount: mode === 'raw' ? 30000 : +mode,
+      topology:  'quad',
       texture:   tex !== 'none',
       pbr:       tex !== 'none',
       texture_resolution: tex === 'none' ? '2k' : tex,
