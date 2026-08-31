@@ -41,7 +41,7 @@ python tools/art-forge/forge.py
 It opens `http://127.0.0.1:8770/`. Set `FORGE_PORT` before launch if that port is occupied. Set
 `ART_ROOT` only when the tool lives outside this repository.
 
-### Meshy cloud setup
+### Meshy cloud setup (Easiest but optional, costs money though so try local first)
 
 Meshy is the production source-generation and retexturing backend. It is paid and every submit
 uses the Meshy account associated with the key.
@@ -72,7 +72,7 @@ Never place a real key in a prompt record, manifest, script, screenshot, commit 
 key in Meshy immediately if it is exposed. Meshy's authentication and key-handling guidance is at
 [docs.meshy.ai/en/api/authentication](https://docs.meshy.ai/en/api/authentication).
 
-### Optional local generation with Modly or another local model
+### Optional local generation with Modly or another local model (Freeeee)
 
 Art Forge does **not** require Modly. Without it, repository browsing, reference checks, GLB/GLTF
 viewing, assembly editing and Meshy all work normally. Local generation is useful for massing tests
