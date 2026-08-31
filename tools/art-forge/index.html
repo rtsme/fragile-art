@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Art Forge</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161a21; --panel-2:#1c2129; --line:#262d38;
+    --ink:#e6e9ef; --muted:#8d97a8; --accent:#e8a33d; --accent-dim:#7a5a22;
+    --ok:#4ec98a; --err:#e05c5c; --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:14px/1.5 "Segoe UI",system-ui,sans-serif}
+  header{display:flex;align-items:center;gap:14px;padding:14px 20px;
+         border-bottom:1px solid var(--line);background:var(--panel)}
+  header h1{margin:0;font-size:16px;font-weight:600;letter-spacing:.3px}
+  header .sub{color:var(--muted);font-size:12px}
+  .pill{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;
+        padding:5px 11px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+  .dot.on{background:var(--ok)} .dot.off{background:var(--err)}
+
+  main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.85fr);
+       gap:16px;padding:16px;align-items:start}
+  @media(max-width:1000px){main{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+  .card h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;
+           letter-spacing:.9px;color:var(--muted);font-weight:600}
+
+  .pathbar{display:flex;gap:8px;margin-bottom:10px}
+  input[type=text],input[type=number],select{
+    background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:8px 10px;border-radius:8px;font:inherit;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--accent-dim)}
+  button{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+         padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer;white-space:nowrap}
+  button:hover:not(:disabled){border-color:var(--accent-dim)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#1a1200;font-weight:600}
+  button.primary:hover:not(:disabled){filter:brightness(1.08)}
+  button.danger{border-color:#5c2b2b;color:#f0a0a0}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .chip{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--panel-2);
+        border:1px solid var(--line);cursor:pointer}
+  .chip:hover{border-color:var(--accent-dim)}
+  .chip .n{color:var(--muted);margin-left:5px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+  .tile{border:2px solid transparent;border-radius:9px;overflow:hidden;cursor:pointer;
+        background:var(--panel-2);transition:border-color .12s}
+  .tile:hover{border-color:var(--accent-dim)}
+  .tile.sel{border-color:var(--accent)}
+  .tile{position:relative}
+  .tile img{display:block;width:100%;height:104px;object-fit:contain;background:#0b0d11}
+  .tile .badge{position:absolute;top:6px;left:6px;min-width:20px;height:20px;padding:0 6px;
+               border-radius:10px;background:var(--accent);color:#1a1200;font-size:11px;
+               font-weight:700;display:none;align-items:center;justify-content:center;
+               line-height:20px;text-align:center}
+  .tile.sel .badge{display:block}
+  .tile .cap{font-size:11px;padding:6px 7px;color:var(--muted);
+             white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .row{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;margin-bottom:9px}
+  .row label{color:var(--muted);font-size:12px}
+  .hint{color:var(--muted);font-size:11px;margin-top:2px}
+
+  .preview{width:100%;height:190px;object-fit:contain;background:#0b0d11;
+           border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
+
+  .bar{height:12px;background:var(--panel-2);border:1px solid var(--line);
+       border-radius:999px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0%;border-radius:999px;
+           background:linear-gradient(90deg,var(--accent-dim),var(--accent));
+           transition:width .35s ease}
+  .bar.busy > i{background-image:linear-gradient(90deg,var(--accent-dim),var(--accent),var(--accent-dim));
+                background-size:200% 100%;animation:slide 1.6s linear infinite}
+  @keyframes slide{from{background-position:0 0}to{background-position:-200% 0}}
+  .statline{display:flex;justify-content:space-between;font-size:12px;margin:9px 0 2px}
+  .statline .step{color:var(--ink)} .statline .meta{color:var(--muted)}
+
+  pre.log{max-height:150px;overflow:auto;background:#0b0d11;border:1px solid var(--line);
+          border-radius:8px;padding:9px;font:11px/1.5 Consolas,monospace;
+          color:var(--muted);margin:10px 0 0;white-space:pre-wrap;word-break:break-all}
+
+  .result{border:1px solid var(--line);border-radius:8px;padding:11px;background:var(--panel-2);margin-top:11px}
+  .result.ok{border-color:#2f6b4c} .result.bad{border-color:#6b3030}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px;margin-top:7px}
+  .kv b{color:var(--muted);font-weight:400}
+  .actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .empty{color:var(--muted);font-size:13px;padding:16px 0;text-align:center}
+
+  /* mesh list */
+  .meshlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  .meshrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+           background:var(--panel-2);border:1px solid var(--line);cursor:pointer}
+  .meshrow:hover{border-color:var(--accent-dim)}
+  .meshrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .meshrow .sz{color:var(--muted);font-size:12px}
+  .meshrow .vw{font-size:11px;color:var(--accent)}
+  .sectionhead{margin:16px 0 4px;font-size:12px;text-transform:uppercase;
+               letter-spacing:.9px;color:var(--muted);font-weight:600}
+
+  /* viewer overlay */
+  #viewer{position:fixed;inset:0;background:rgba(7,9,12,.94);z-index:50;
+          display:none;flex-direction:column}
+  #viewer.on{display:flex}
+  #viewer .vtop{display:flex;align-items:center;gap:10px;padding:11px 16px;
+                border-bottom:1px solid var(--line);background:var(--panel)}
+  #viewer .vtop .t{font-weight:600}
+  #viewer .vtop .s{color:var(--muted);font-size:12px}
+  #viewer .vtop .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  #viewer canvas{display:block;width:100%;height:100%}
+  #vstage{flex:1;position:relative;min-height:0}
+  #vloading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            color:var(--muted);font-size:13px;pointer-events:none}
+  button.on{background:var(--accent);border-color:var(--accent);color:#1a1200}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Art Forge</h1>
+  <span class="sub">concept art &rarr; 3D mesh</span>
+  <span class="pill"><span id="dot" class="dot"></span><span id="backendTxt">checking backend…</span></span>
+</header>
+
+<main>
+  <!-- ── left: pick an image ─────────────────────────────────────────── -->
+  <section class="card">
+    <h2>Reference folder</h2>
+    <div class="pathbar">
+      <input type="text" id="path" spellcheck="false" />
+      <button id="go">Open</button>
+      <button id="browse">Browse…</button>
+      <button id="up" title="Parent folder">↑</button>
+    </div>
+    <div class="chips" id="subdirs"></div>
+    <div class="grid" id="images"></div>
+    <div class="empty" id="noImages" hidden>No images here — open a subfolder above.</div>
+
+    <div id="meshSection" hidden>
+      <div class="sectionhead">Meshes in this folder</div>
+      <div class="meshlist" id="meshes"></div>
+    </div>
+  </section>
+
+  <!-- ── right: forge it ─────────────────────────────────────────────── -->
+  <section class="card">
+    <h2>Forge</h2>
+    <div class="row" style="margin-bottom:12px">
+      <label for="backend">Generator</label>
+      <select id="backend">
+        <option value="local" selected>Local — Hunyuan3D (free, 1 image)</option>
+        <option value="meshy">Meshy — cloud (paid, up to 4 images, textured)</option>
+      </select>
+    </div>
+
+    <img id="preview" class="preview" alt="" hidden />
+    <div class="empty" id="noSel">Pick an image on the left.</div>
+
+    <div id="settings" hidden>
+      <div class="row">
+        <label for="name">Output</label>
+        <input type="text" id="name" spellcheck="false" />
+      </div>
+      <div class="row">
+        <label for="outDir">Folder</label>
+        <input type="text" id="outDir" spellcheck="false" />
+      </div>
+      <!-- ── Meshy-only options ─────────────────────────────────────── -->
+      <div id="meshyOpts" hidden>
+        <div class="row">
+          <label for="polycount">Polycount</label>
+          <select id="polycount">
+            <option value="5000">5,000 — RTS distance</option>
+            <option value="15000" selected>15,000 — balanced</option>
+            <option value="30000">30,000 — Meshy default</option>
+            <option value="100000">100,000 — hero asset</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="topology">Topology</label>
+          <select id="topology">
+            <option value="quad" selected>quad — clean, editable</option>
+            <option value="triangle">triangle</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="texres">Texture</label>
+          <select id="texres">
+            <option value="2k" selected>2K + PBR</option>
+            <option value="4k">4K + PBR</option>
+            <option value="8k">8K + PBR (costs more)</option>
+            <option value="none">no texture (cheaper)</option>
+          </select>
+        </div>
+        <div class="hint" id="meshyHint">
+          Select up to 4 images on the left — the <b>first</b> one you click is the front view.
+        </div>
+      </div>
+
+      <!-- ── local-only options ────────────────────────────────────── -->
+      <div class="row localOpt">
+        <label for="steps">Quality</label>
+        <select id="steps">
+          <option value="10">Fast — 10 steps</option>
+          <option value="30" selected>Balanced — 30 steps</option>
+          <option value="50">High — 50 steps</option>
+        </select>
+      </div>
+      <div class="row localOpt">
+        <label for="octree">Resolution</label>
+        <select id="octree">
+          <option value="256">256 — coarse, fastest</option>
+          <option value="380" selected>380 — default</option>
+          <option value="512">512 — max detail</option>
+        </select>
+      </div>
+      <div class="row localOpt">
+        <label for="remesh">Remesh</label>
+        <select id="remesh">
+          <option value="none" selected>none — raw output</option>
+          <option value="quad">quad</option>
+          <option value="triangle">triangle</option>
+        </select>
+      </div>
+      <div class="row localOpt">
+        <label for="seed">Seed</label>
+        <input type="number" id="seed" placeholder="random" />
+      </div>
+      <div class="hint localOpt">Textures are off — the ROCm build has no CUDA kernels for the paint pass.</div>
+
+      <div class="actions">
+        <button class="primary" id="forge">Forge model</button>
+        <button class="danger" id="cancel" hidden>Cancel</button>
+      </div>
+    </div>
+
+    <div id="progressWrap" hidden>
+      <div class="bar" id="bar"><i id="fill"></i></div>
+      <div class="statline">
+        <span class="step" id="stepTxt">…</span>
+        <span class="meta"><span id="pct">0</span>% · <span id="elapsed">0</span>s</span>
+      </div>
+      <pre class="log" id="log"></pre>
+    </div>
+
+    <div id="resultWrap"></div>
+  </section>
+</main>
+
+<div id="viewer">
+  <div class="vtop">
+    <span class="t" id="vname">mesh</span>
+    <span class="s" id="vstats"></span>
+    <span class="sp">
+      <button id="vwire">Wireframe</button>
+      <button id="vgrid" class="on">Grid</button>
+      <button id="vspin">Spin</button>
+      <button id="vreset">Reset view</button>
+      <button id="vclose">Close</button>
+    </span>
+  </div>
+  <div id="vstage"><div id="vloading">loading…</div></div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "/vendor/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader }    from '/vendor/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from '/vendor/jsm/controls/OrbitControls.js';
+
+const stage = document.getElementById('vstage');
+let renderer, scene, camera, controls, grid, root, raf, spin = false, wire = false;
+
+function init(){
+  renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stage.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d1015);
+
+  camera = new THREE.PerspectiveCamera(42, 1, 0.01, 500);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x2a2620, 2.1));
+  const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(3,5,2);
+  const rim = new THREE.DirectionalLight(0x88aaff, 0.8); rim.position.set(-4,2,-3);
+  scene.add(key, rim);
+
+  grid = new THREE.GridHelper(10, 20, 0x3a4454, 0x222a35);
+  scene.add(grid);
+
+  new ResizeObserver(resize).observe(stage);
+  resize();
+  window.forgeViewer = { renderer, scene, camera, controls };   // handy for debugging
+}
+
+function resize(){
+  if(!renderer) return;
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if(!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+function loop(){
+  raf = requestAnimationFrame(loop);
+  if(spin && root) root.rotation.y += 0.004;
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+let lastSize = new THREE.Vector3(1,1,1);
+
+/** Recentre the model over the origin and sit it on the grid. Once, at load. */
+function centre(obj){
+  const box  = new THREE.Box3().setFromObject(obj);
+  const size = box.getSize(new THREE.Vector3());
+  const ctr  = box.getCenter(new THREE.Vector3());
+  obj.position.x -= ctr.x;
+  obj.position.z -= ctr.z;
+  obj.position.y += size.y / 2 - ctr.y;      // base sits on y=0
+  grid.scale.setScalar(Math.max(Math.max(size.x, size.y, size.z), 0.001) / 2.4);
+  lastSize = size;
+  return size;
+}
+
+/** Park the camera so the whole model is in shot. Safe to call repeatedly. */
+function frameCamera(){
+  const r = Math.max(lastSize.x, lastSize.y, lastSize.z) || 1;
+  camera.position.set(r*1.5, r*1.05, r*1.7);
+  controls.target.set(0, lastSize.y/2, 0);
+  controls.update();
+}
+
+window.openViewer = function(path, name){
+  document.getElementById('viewer').classList.add('on');
+  document.getElementById('vname').textContent = name || path;
+  document.getElementById('vstats').textContent = '';
+  document.getElementById('vloading').style.display = 'flex';
+  if(!renderer){ init(); loop(); }
+  resize();
+
+  if(root){ scene.remove(root); disposeTree(root); root = null; }
+
+  new GLTFLoader().load('/api/mesh?path=' + encodeURIComponent(path), gltf => {
+    root = gltf.scene;
+    let tris = 0, verts = 0, textures = false;
+    root.traverse(o => {
+      if(!o.isMesh) return;
+      const g = o.geometry;
+      verts += g.attributes.position.count;
+      tris  += g.index ? g.index.count/3 : g.attributes.position.count/3;
+      // Hunyuan3D exports position only — without normals a lit material renders black.
+      if(!g.attributes.normal) g.computeVertexNormals();
+      // Keep a real textured material (Meshy); only substitute clay for untextured sculpts.
+      const textured = o.material && o.material.map;
+      if(textured){
+        o.material.side = THREE.DoubleSide;
+        o.material.wireframe = wire;
+        textures = true;
+      } else {
+        o.material = new THREE.MeshStandardMaterial({
+          color:0xb9bec7, metalness:0.15, roughness:0.72,
+          flatShading:false, side:THREE.DoubleSide, wireframe:wire});
+      }
+    });
+    const pivot = new THREE.Group(); pivot.add(root); scene.add(pivot); root = pivot;
+    const size = centre(root);
+    frameCamera();
+    document.getElementById('vstats').textContent =
+      `${Math.round(tris).toLocaleString()} tris · ${verts.toLocaleString()} verts · ` +
+      `${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)} units · ` +
+      (textures ? 'textured' : 'untextured');
+    document.getElementById('vloading').style.display = 'none';
+  }, undefined, err => {
+    document.getElementById('vloading').textContent = 'Failed to load: ' + err.message;
+  });
+};
+
+function disposeTree(o){
+  o.traverse(n => { if(n.geometry) n.geometry.dispose();
+                    if(n.material) [].concat(n.material).forEach(m => m.dispose()); });
+}
+
+document.getElementById('vclose').onclick = () => {
+  document.getElementById('viewer').classList.remove('on');
+};
+document.getElementById('vwire').onclick = e => {
+  wire = !wire; e.target.classList.toggle('on', wire);
+  if(root) root.traverse(o => { if(o.isMesh) o.material.wireframe = wire; });
+};
+document.getElementById('vgrid').onclick = e => {
+  grid.visible = !grid.visible; e.target.classList.toggle('on', grid.visible);
+};
+document.getElementById('vspin').onclick = e => {
+  spin = !spin; e.target.classList.toggle('on', spin);
+};
+document.getElementById('vreset').onclick = () => { if(root){ root.rotation.y = 0; frameCamera(); } };
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.getElementById('viewer').classList.remove('on');
+});
+</script>
+
+<script>
+const $ = id => document.getElementById(id);
+let state = { path:null, selected:[], polling:null, meshyMax:4 };
+
+async function api(route, opts){ const r = await fetch(route, opts); return r.json(); }
+async function post(route, body){
+  return api(route, {method:'POST', headers:{'Content-Type':'application/json'},
+                     body: JSON.stringify(body||{})});
+}
+
+// ── folder + image browsing ───────────────────────────────────────────
+async function load(path){
+  const data = await api('/api/scan?path=' + encodeURIComponent(path));
+  if(!data.ok){ $('subdirs').innerHTML = ''; $('images').innerHTML =
+      '<div class="empty">' + (data.error||'Cannot read folder') + '</div>'; return; }
+
+  state.path = data.path;
+  $('path').value = data.path;
+  $('up').disabled = !data.parent;
+  $('up').dataset.parent = data.parent || '';
+
+  $('subdirs').innerHTML = data.subdirs.map(d =>
+    `<span class="chip" data-path="${esc(d.path)}">${esc(d.name)}${
+      d.images ? `<span class="n">${d.images}</span>` : ''}</span>`).join('');
+
+  $('images').innerHTML = data.images.map(im =>
+    `<div class="tile" data-path="${esc(im.path)}" data-name="${esc(im.name)}">
+       <span class="badge"></span>
+       <img loading="lazy" src="/api/thumb?path=${encodeURIComponent(im.path)}" alt="">
+       <div class="cap" title="${esc(im.name)}">${esc(im.name)}</div>
+     </div>`).join('');
+  paintSelection();
+
+  $('noImages').hidden = data.images.length > 0;
+
+  const meshes = data.meshes || [];
+  $('meshSection').hidden = meshes.length === 0;
+  $('meshes').innerHTML = meshes.map(m =>
+    `<div class="meshrow" data-path="${esc(m.path)}" data-name="${esc(m.name)}">
+       <span class="nm">${esc(m.name)}</span>
+       <span class="sz">${(m.size/1048576).toFixed(1)} MB</span>
+       <span class="vw">view →</span>
+     </div>`).join('');
+}
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function maxImages(){ return $('backend').value === 'meshy' ? (state.meshyMax || 4) : 1; }
+
+/** Click toggles membership; selection ORDER matters — the first is the front view. */
+function toggleImage(path, name){
+  const i = state.selected.findIndex(s => s.path === path);
+  if(i >= 0){
+    state.selected.splice(i, 1);
+  } else {
+    if(state.selected.length >= maxImages()) state.selected.shift();   // drop the oldest
+    state.selected.push({path, name});
+  }
+  paintSelection();
+
+  const first = state.selected[0];
+  $('preview').hidden = !first;
+  $('noSel').hidden   = !!first;
+  $('settings').hidden = !first;
+  if(first){
+    $('preview').src = '/api/thumb?path=' + encodeURIComponent(first.path);
+    const stem = first.name.replace(/\.[^.]+$/, '')
+                           .replace(/_(concept|input|front|back|left|right|top|bottom).*$/i, '');
+    $('name').value = stem + '_ai_v01.glb';
+    if(!$('outDir').value) $('outDir').value = state.path;
+  }
+}
+
+function paintSelection(){
+  document.querySelectorAll('.tile').forEach(t => {
+    const idx = state.selected.findIndex(s => s.path === t.dataset.path);
+    t.classList.toggle('sel', idx >= 0);
+    const b = t.querySelector('.badge');
+    if(b) b.textContent = idx === 0 ? 'FRONT' : (idx > 0 ? String(idx + 1) : '');
+  });
+  const n = state.selected.length, max = maxImages();
+  const hint = $('meshyHint');
+  if(hint) hint.innerHTML = `Selected <b>${n}</b> of ${max}. The <b>first</b> image you click is the front view.`;
+}
+
+function applyBackend(){
+  const meshy = $('backend').value === 'meshy';
+  $('meshyOpts').hidden = !meshy;
+  document.querySelectorAll('.localOpt').forEach(el => el.hidden = meshy);
+  if(!meshy && state.selected.length > 1) state.selected = state.selected.slice(0, 1);
+  paintSelection();
+  refreshState();
+}
+
+// ── backend status ────────────────────────────────────────────────────
+async function refreshState(){
+  const s = await api('/api/state');
+  state.meshyMax = s.meshy_max_images || 4;
+  if($('backend').value === 'meshy'){
+    $('dot').className = 'dot ' + (s.meshy_key ? 'on' : 'off');
+    $('backendTxt').textContent = s.meshy_key
+      ? 'Meshy key found'
+      : 'no Meshy key — set MESHY_API_KEY or create meshy.key';
+  } else {
+    $('dot').className = 'dot ' + (s.backend ? 'on' : 'off');
+    $('backendTxt').textContent = s.backend
+      ? 'local backend up' + (s.model && s.model.loaded ? ' · model loaded' : '')
+      : 'local backend down — starting on first forge';
+  }
+  return s;
+}
+
+// ── generation ────────────────────────────────────────────────────────
+async function forge(){
+  $('resultWrap').innerHTML = '';
+  const backend = $('backend').value;
+  const body = {
+    backend,
+    images: state.selected.map(s => s.path),
+    out_dir: $('outDir').value.trim() || state.path,
+    name: $('name').value.trim(),
+  };
+  if(backend === 'meshy'){
+    const tex = $('texres').value;
+    Object.assign(body, {
+      polycount: +$('polycount').value,
+      topology:  $('topology').value,
+      texture:   tex !== 'none',
+      pbr:       tex !== 'none',
+      texture_resolution: tex === 'none' ? '2k' : tex,
+    });
+  } else {
+    Object.assign(body, {
+      steps:  +$('steps').value,
+      octree: +$('octree').value,
+      remesh: $('remesh').value,
+      seed:   $('seed').value.trim() || null,
+    });
+  }
+  $('forge').disabled = true;
+  $('stepTxt').textContent = 'Starting backend…';
+  $('progressWrap').hidden = false;
+  $('bar').classList.add('busy');
+
+  const r = await post('/api/generate', body);
+  if(!r.ok){
+    $('forge').disabled = false;
+    $('bar').classList.remove('busy');
+    showResult({status:'error', error:r.error});
+    return;
+  }
+  $('cancel').hidden = false;
+  poll();
+}
+
+function poll(){
+  clearInterval(state.polling);
+  state.polling = setInterval(async () => {
+    const j = await api('/api/progress');
+    $('fill').style.width = (j.progress||0) + '%';
+    $('pct').textContent = j.progress||0;
+    $('elapsed').textContent = j.elapsed||0;
+    $('stepTxt').textContent = j.step || '…';
+    $('log').textContent = (j.log||[]).join('\n');
+    $('log').scrollTop = $('log').scrollHeight;
+
+    if(j.status !== 'running'){
+      clearInterval(state.polling);
+      $('forge').disabled = false;
+      $('cancel').hidden = true;
+      $('bar').classList.remove('busy');
+      showResult(j);
+      refreshState();
+    }
+  }, 1000);
+}
+
+function showResult(j){
+  if(j.status === 'done'){
+    const r = j.result || {};
+    const m = r.mesh || {};
+    $('resultWrap').innerHTML = `
+      <div class="result ok">
+        <b>Forged.</b>
+        <div class="kv">
+          <b>file</b><span>${esc(j.output||'')}</span>
+          ${m.faces ? `<b>faces</b><span>${m.faces.toLocaleString()}</span>
+                       <b>vertices</b><span>${m.vertices.toLocaleString()}</span>
+                       <b>size</b><span>${m.size_mb} MB</span>
+                       <b>watertight</b><span>${m.watertight}</span>` : ''}
+          ${r.backend === 'meshy' ? `<b>credits</b><span>${r.consumed_credits ?? '?'}</span>
+                       <b>textures</b><span>${r.texture_maps || 0} PBR map(s)</span>` : ''}
+          <b>took</b><span>${j.elapsed}s</span>
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="openViewer('${jsq(j.output)}','${
+            jsq((j.output||'').split(/[\\/]/).pop())}')">View in 3D</button>
+          <button onclick="reveal('${jsq(j.output)}')">Show in Explorer</button>
+        </div>
+      </div>`;
+  } else if(j.status === 'cancelled'){
+    $('resultWrap').innerHTML = `<div class="result">Cancelled.</div>`;
+  } else {
+    $('resultWrap').innerHTML =
+      `<div class="result bad"><b>Failed.</b><div class="kv"><b>error</b><span>${
+        esc(j.error||'unknown')}</span></div></div>`;
+  }
+}
+
+function jsq(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+async function reveal(p){ await post('/api/reveal', {path:p}); }
+
+// ── wiring ────────────────────────────────────────────────────────────
+$('images').addEventListener('click', e => {
+  const t = e.target.closest('.tile');
+  if(t) toggleImage(t.dataset.path, t.dataset.name);
+});
+$('backend').onchange = applyBackend;
+$('subdirs').addEventListener('click', e => {
+  const c = e.target.closest('.chip');
+  if(c) load(c.dataset.path);
+});
+$('meshes').addEventListener('click', e => {
+  const r = e.target.closest('.meshrow');
+  if(r) openViewer(r.dataset.path, r.dataset.name);
+});
+$('go').onclick    = () => load($('path').value.trim());
+$('up').onclick    = () => { const p = $('up').dataset.parent; if(p) load(p); };
+$('browse').onclick= async () => { const r = await post('/api/browse',{start:state.path});
+                                   if(r.ok) load(r.path); };
+$('forge').onclick = forge;
+$('cancel').onclick= async () => { await post('/api/cancel'); };
+$('path').addEventListener('keydown', e => { if(e.key==='Enter') load($('path').value.trim()); });
+
+(async function init(){
+  const s = await refreshState();
+  applyBackend();
+  await load(s.art_root);
+  setInterval(refreshState, 8000);
+  const j = await api('/api/progress');
+  if(j.status === 'running'){ $('progressWrap').hidden = false;
+    $('bar').classList.add('busy'); $('cancel').hidden = false;
+    $('forge').disabled = true; poll(); }
+})();
+</script>
+</body>
+</html>

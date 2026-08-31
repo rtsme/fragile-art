@@ -1,0 +1,28 @@
+# Meshy API key. Secret — never commit. Art Forge also reads MESHY_API_KEY.
+tools/art-forge/meshy.key
+
+# Raw generator output, wherever it lands. These regenerate in seconds and churn on
+# every parameter change, so only approved meshes are committed. Force one in with
+# `git add -f` once it has been reviewed.
+# Path-independent on purpose: Art Forge defaults its output folder to the source
+# image's directory, so sculpts can appear next to the references that made them.
+**/*_ai_raw_*.glb
+**/*_ai_hi*_*.glb
+**/*_ai_v*.glb
+**/*_experiment_*.glb
+
+# References hold images only — a mesh in here is a misplaced generator output.
+References/**/*.glb
+References/**/*.gltf
+
+# Tracker backups — git history is the real backup once a change is committed.
+docs/*.BACKUP-*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,16 @@
+# Art binaries go through LFS. They are large, opaque to diff, and would otherwise
+# bloat the pack permanently — the whole reason this repo is separate from the game.
+*.png  filter=lfs diff=lfs merge=lfs -text
+*.jpg  filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.glb  filter=lfs diff=lfs merge=lfs -text
+*.gltf filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.xlsx filter=lfs diff=lfs merge=lfs -text
+
+# Source stays as normal text so it stays diffable.
+*.py   text
+*.html text
+*.md   text
+*.js   text
