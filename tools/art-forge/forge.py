@@ -7,6 +7,7 @@ Stdlib only - run with Python 3.12:  py -3.12 forge.py
 """
 from __future__ import annotations
 
+import base64
 import json
 import mimetypes
 import os
@@ -44,7 +45,7 @@ ART_ROOT = Path(os.environ.get("ART_ROOT", HERE.parent.parent))
 MODEL_ID = os.environ.get("MODLY_MODEL_ID", "hunyuan3d-mini/generate")
 
 FORGE_PORT = int(os.environ.get("FORGE_PORT", "8770"))
-APP_VERSION = "1.2.0"
+APP_VERSION = "1.3.0"
 
 CHECK_VIEWS = HERE.parent / "check-views.py"
 
@@ -736,6 +737,53 @@ def save_assembly(path: Path, document: dict) -> None:
     path.write_text(json.dumps(clean, indent=2) + "\n", encoding="utf-8")
 
 
+def save_assembly_review_capture(path: Path, view: str, data_url: str,
+                                 selected_instance: str | None = None) -> dict:
+    """Save one deterministic viewer capture beside its assembly scene."""
+    path = _inside_art_root(path)
+    if not path.is_file() or not path.name.lower().endswith(ASSEMBLY_SUFFIX):
+        raise ValueError("Not an Art Forge .assembly.json file")
+    safe_view = "".join(c for c in (view or "view").lower() if c.isalnum() or c in "-_")
+    if not safe_view:
+        raise ValueError("Capture view needs a name")
+    prefix = "data:image/png;base64,"
+    if not isinstance(data_url, str) or not data_url.startswith(prefix):
+        raise ValueError("Capture must be a PNG data URL")
+    encoded = data_url[len(prefix):]
+    if len(encoded) > 28_000_000:
+        raise ValueError("Capture exceeds the 20 MB limit")
+    try:
+        png = base64.b64decode(encoded, validate=True)
+    except Exception as exc:
+        raise ValueError("Capture contains invalid base64") from exc
+    if not png.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("Capture is not a valid PNG")
+
+    scene_name = path.name[:-len(ASSEMBLY_SUFFIX)]
+    review_dir = path.with_name(f"{scene_name}_review")
+    review_dir.mkdir(parents=True, exist_ok=True)
+    capture_path = review_dir / f"{safe_view}.png"
+    capture_path.write_bytes(png)
+
+    manifest_path = review_dir / "review-manifest.json"
+    manifest = {}
+    if manifest_path.is_file():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception:
+            manifest = {}
+    captures = manifest.setdefault("captures", {})
+    captures[safe_view] = {
+        "file": capture_path.name,
+        "selected_instance": selected_instance,
+        "updated": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    manifest["schema"] = "art-forge-assembly-review-v1"
+    manifest["assembly"] = path.name
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return {"path": str(capture_path), "relative_path": str(capture_path.relative_to(ART_ROOT))}
+
+
 def gallery(root: Path, limit: int = 400) -> dict:
     """
     Every asset under a subtree, with its images — the review pass over a whole
@@ -966,6 +1014,19 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 save_assembly(Path(body.get("path") or ""), body.get("document") or {})
                 self.send_json({"ok": True})
+            except Exception as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+            return
+
+        if route == "/api/assembly/review-capture":
+            try:
+                result = save_assembly_review_capture(
+                    Path(body.get("path") or ""),
+                    str(body.get("view") or ""),
+                    str(body.get("data_url") or ""),
+                    body.get("selected_instance"),
+                )
+                self.send_json({"ok": True, **result})
             except Exception as exc:
                 self.send_json({"ok": False, "error": str(exc)}, 400)
             return

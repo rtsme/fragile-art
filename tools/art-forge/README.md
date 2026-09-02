@@ -70,12 +70,23 @@ source GLBs, so it can take a moment. The Parts panel provides:
 
 - a selector for all 49 placed instances
 - position and rotation editing in metres/degrees
+- draggable move and rotate gizmos (`W` and `E`) with 0.1 m, 0.5 m or 1 m translation snapping
 - production-envelope size controls
 - per-instance visibility
+- selected-part isolation and an amber selection envelope
+- named receiver markers, **Mark receiver here**, and **Snap part**
+- fixed front, rear, left, right, top and three-quarter review cameras
+- **Capture view** and **Capture 8-view set**, which save PNGs and a review manifest beside the assembly
 - **Save layout**, which writes the transforms back to the `.assembly.json` file
 
 Double-click a visible part to select it directly. Wireframe, grid, spin and camera reset work for
 both single meshes and assemblies.
+
+Receiver records are optional top-level entries in the assembly document. Each record can include
+`id`, `position`, `rotation`, `accepts` and `radius`. Marking a receiver or moving a part changes the
+working scene only until **Save layout** is pressed. Captures are written to
+`<assembly-name>_review/`; repeating a capture replaces that named view so the folder always holds
+the current comparison set.
 
 ## Concept-conditioned retexturing
 

@@ -6,6 +6,14 @@ The generated base shell and shared detail meshes are textured independently. Th
 assembly time. This is the material equivalent of the split geometry pipeline: large building
 surfaces stay efficient, and a door or vent looks identical everywhere it is reused.
 
+## Upstream reference contract
+
+Body-only base concepts and their orthographic references are textured. They retain the approved
+race palette, broad architectural material zones and macro-scale wear while excluding detachable
+geometry. A neutral clay base may be retained as failure history or a diagnostic massing study, but
+it is not the production reference source. The image-to-3D job therefore receives useful material
+evidence from the beginning.
+
 ## What happens to generated textures
 
 Meshy PBR output may be retained as the standalone textured base when it passes geometry and
@@ -14,10 +22,11 @@ placed. It is still a source asset: generated lighting, implausible painted deta
 microdetail must be rejected or removed during cleanup, and engine-specific glass/emission remain
 downstream concerns.
 
-For the accepted route, submit the already approved base to Meshy's texture-only retexture pass,
-preserve its original UVs, request PBR/4K and use the locked final concept only as a material/style
-reference. The concept is not a geometry instruction. Review every face for invented or painted-on
-attachments before approval.
+When the generated textures need refinement, submit the already approved base to Meshy's
+texture-only retexture pass, preserve its original UVs, request PBR/4K and use the locked final
+concept only as a material/style reference. This is an optional refinement/repair stage, not the
+first texture application. The concept is not a geometry instruction. Review every face for
+invented or painted-on attachments before approval.
 
 ## Base-building materials
 

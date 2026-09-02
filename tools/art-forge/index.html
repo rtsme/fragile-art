@@ -124,7 +124,7 @@
   #vloading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
             color:var(--muted);font-size:13px;pointer-events:none}
   button.on{background:var(--accent);border-color:var(--accent);color:#1a1200}
-  #assemblyPanel{position:absolute;top:14px;right:14px;width:min(330px,calc(100% - 28px));
+  #assemblyPanel{position:absolute;top:14px;right:14px;width:min(390px,calc(100% - 28px));
                  max-height:calc(100% - 28px);overflow:auto;background:rgba(22,26,33,.96);
                  border:1px solid var(--line);border-radius:10px;padding:12px;
                  box-shadow:0 12px 36px rgba(0,0,0,.4)}
@@ -140,6 +140,14 @@
   .apcheck{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin:8px 0}
   .apactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
   .apstatus{font-size:11px;color:var(--muted);margin-top:8px;min-height:16px}
+  .apsection{border-top:1px solid var(--line);margin-top:11px;padding-top:10px}
+  .apsection h4{margin:0 0 7px;font-size:10px;text-transform:uppercase;
+                letter-spacing:.8px;color:var(--muted)}
+  .aptoolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .aptoolbar button{padding:6px 9px;font-size:11px}
+  .aptoolbar select{width:auto;min-width:92px;margin:0!important;padding:6px 8px;font-size:11px}
+  .camgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .camgrid button{padding:6px 4px;font-size:10px}
 
   .warnbox{margin-top:10px;padding:9px 11px;border-radius:8px;font-size:12px;
            border:1px solid #6b5320;background:#241d10;color:#e8c98d}
@@ -313,11 +321,45 @@
       <h3>Assembly placement</h3>
       <select id="apart"></select>
       <div class="apmeta" id="apmeta"></div>
+      <div class="aptoolbar">
+        <button id="aptranslate" class="on" title="Move gizmo (W)">Move</button>
+        <button id="aprotate" title="Rotate gizmo (E)">Rotate</button>
+        <select id="apsnap" title="Translation grid and rotation increment">
+          <option value="0">Snap off</option>
+          <option value="0.1">Snap 0.1 m</option>
+          <option value="0.5" selected>Snap 0.5 m</option>
+          <option value="1">Snap 1 m</option>
+        </select>
+        <button id="apisolate">Isolate</button>
+        <button id="apseat" title="Drop the selected part onto the base mesh at its current X/Z position">Seat on base</button>
+      </div>
       <div class="apaxis"><span></span><span>X</span><span>Y</span><span>Z</span></div>
       <div class="aprow"><label>Position</label><input id="appx" type="number" step="0.1"><input id="appy" type="number" step="0.1"><input id="appz" type="number" step="0.1"></div>
       <div class="aprow"><label>Rotation</label><input id="aprx" type="number" step="1"><input id="apry" type="number" step="1"><input id="aprz" type="number" step="1"></div>
       <div class="aprow"><label>Size (m)</label><input id="apsx" type="number" step="0.1" min="0.01"><input id="apsy" type="number" step="0.1" min="0.01"><input id="apsz" type="number" step="0.1" min="0.01"></div>
       <label class="apcheck"><input id="apvisible" type="checkbox" checked> visible in preview</label>
+      <div class="apsection">
+        <h4>Receiver fit</h4>
+        <select id="apreceiver"><option value="">No receivers recorded</option></select>
+        <div class="aptoolbar">
+          <button id="apreceivers" class="on">Markers</button>
+          <button id="apsnaptoreceiver">Snap part</button>
+          <button id="apmarkreceiver">Mark receiver here</button>
+        </div>
+      </div>
+      <div class="apsection">
+        <h4>Review cameras</h4>
+        <div class="camgrid" id="apcameras">
+          <button data-view="front">Front</button><button data-view="rear">Rear</button>
+          <button data-view="left">Left</button><button data-view="right">Right</button>
+          <button data-view="top">Top</button><button data-view="front-left">Front-left</button>
+          <button data-view="front-right">Front-right</button><button data-view="rear-right">Rear-right</button>
+        </div>
+        <div class="aptoolbar" style="margin-top:7px">
+          <button id="apcapture">Capture view</button>
+          <button id="apcaptureset">Capture 8-view set</button>
+        </div>
+      </div>
       <div class="apactions">
         <button id="apapply">Apply transform</button>
         <button class="primary" id="apsave">Save layout</button>
@@ -335,11 +377,14 @@
 import * as THREE from 'three';
 import { GLTFLoader }    from '/vendor/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from '/vendor/jsm/controls/OrbitControls.js';
+import { TransformControls } from '/vendor/jsm/controls/TransformControls.js';
 
 const stage = document.getElementById('vstage');
-let renderer, scene, camera, controls, grid, root, raf, spin = false, wire = false;
+let renderer, scene, camera, controls, transformControls, transformHelper, grid, root, raf, spin = false, wire = false;
 let viewerMode = 'mesh', loadToken = 0, assemblyPath = '', assemblyData = null;
 let assemblyObjects = [], assemblySources = new Map(), selectedAssemblyIndex = -1, selectionBox = null;
+let receiverRoot = null, isolateSelected = false, currentReviewView = 'front-right';
+let assemblyFrameBox = new THREE.Box3();
 
 function init(){
   renderer = new THREE.WebGLRenderer({antialias:true});
@@ -353,6 +398,16 @@ function init(){
   camera = new THREE.PerspectiveCamera(42, 1, 0.01, 500);
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
+
+  transformControls = new TransformControls(camera, renderer.domElement);
+  transformHelper = transformControls.getHelper();
+  transformHelper.visible = false;
+  scene.add(transformHelper);
+  transformControls.setMode('translate');
+  transformControls.setTranslationSnap(.5);
+  transformControls.setRotationSnap(THREE.MathUtils.degToRad(15));
+  transformControls.addEventListener('dragging-changed', event => { controls.enabled = !event.value; });
+  transformControls.addEventListener('objectChange', syncTransformFromGizmo);
 
   scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x2a2620, 2.1));
   const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(3,5,2);
@@ -452,14 +507,18 @@ function disposeTree(obj){
 
 function clearViewerRoot(){
   loadToken++;
+  if(transformControls){ transformControls.detach(); transformHelper.visible = false; }
   if(selectionBox){ scene.remove(selectionBox); selectionBox.geometry.dispose();
                     selectionBox.material.dispose(); selectionBox = null; }
+  if(receiverRoot){ scene.remove(receiverRoot); disposeTree(receiverRoot); receiverRoot = null; }
   if(root){ scene.remove(root); disposeTree(root); root = null; }
   assemblyObjects = [];
   assemblySources.clear();
   assemblyData = null;
   assemblyPath = '';
   selectedAssemblyIndex = -1;
+  isolateSelected = false;
+  document.getElementById('apisolate').classList.remove('on');
   document.getElementById('assemblyPanel').hidden = true;
   document.getElementById('vparts').hidden = true;
 }
@@ -506,7 +565,7 @@ function applyInstanceTransform(index){
   const pos = instance.position || [0,0,0], rot = instance.rotation || [0,0,0];
   object.position.fromArray(pos.map(Number));
   object.rotation.set(degrees(+rot[0]||0), degrees(+rot[1]||0), degrees(+rot[2]||0));
-  object.visible = instance.visible !== false;
+  object.visible = instance.visible !== false && (!isolateSelected || index === selectedAssemblyIndex);
   const size = targetSize(instance, asset), source = object.userData.sourceSize;
   object.userData.normalizer.scale.set(size[0]/source.x, size[1]/source.y, size[2]/source.z);
   object.updateMatrixWorld(true);
@@ -533,6 +592,42 @@ function selectedValues(prefix){
   return ['x','y','z'].map(axis => Number(document.getElementById(prefix+axis).value) || 0);
 }
 
+function roundTransform(value, places = 4){
+  const factor = 10 ** places;
+  return Math.round((Number(value) || 0) * factor) / factor;
+}
+
+function syncTransformInputs(){
+  if(selectedAssemblyIndex < 0 || !assemblyData) return;
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  ['x','y','z'].forEach((axis, i) => {
+    document.getElementById('app'+axis).value = instance.position[i];
+    document.getElementById('apr'+axis).value = instance.rotation[i];
+  });
+}
+
+function syncTransformFromGizmo(){
+  if(selectedAssemblyIndex < 0 || !assemblyData || !assemblyObjects[selectedAssemblyIndex]) return;
+  const object = assemblyObjects[selectedAssemblyIndex];
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  instance.position = object.position.toArray().map(value => roundTransform(value));
+  instance.rotation = [object.rotation.x, object.rotation.y, object.rotation.z]
+    .map(value => roundTransform(THREE.MathUtils.radToDeg(value), 3));
+  syncTransformInputs();
+  if(selectionBox) selectionBox.update();
+  document.getElementById('apstatus').textContent = 'Gizmo transform applied locally. Save layout to keep it.';
+}
+
+function refreshIsolation(){
+  if(!assemblyData) return;
+  assemblyObjects.forEach((object, index) => {
+    if(!object) return;
+    const enabled = assemblyData.instances[index].visible !== false;
+    object.visible = enabled && (!isolateSelected || index === selectedAssemblyIndex);
+  });
+  if(selectionBox) selectionBox.visible = assemblyObjects[selectedAssemblyIndex]?.visible !== false;
+}
+
 function selectAssemblyPart(index){
   if(!assemblyData || !assemblyObjects[index]) return;
   selectedAssemblyIndex = index;
@@ -552,6 +647,9 @@ function selectAssemblyPart(index){
   if(selectionBox){ scene.remove(selectionBox); selectionBox.geometry.dispose(); selectionBox.material.dispose(); }
   selectionBox = new THREE.BoxHelper(assemblyObjects[index], 0xe8a33d);
   scene.add(selectionBox);
+  transformControls.attach(assemblyObjects[index]);
+  transformHelper.visible = true;
+  refreshIsolation();
 }
 
 function populateAssemblyInspector(){
@@ -561,6 +659,7 @@ function populateAssemblyInspector(){
   document.getElementById('assemblyPanel').hidden = false;
   document.getElementById('vparts').hidden = false;
   document.getElementById('vparts').classList.add('on');
+  populateReceiverInspector();
   selectAssemblyPart(0);
 }
 
@@ -572,8 +671,36 @@ function applyAssemblyEdits(){
   instance.size = selectedValues('aps').map(n => Math.max(n, .01));
   instance.visible = document.getElementById('apvisible').checked;
   applyInstanceTransform(selectedAssemblyIndex);
+  refreshIsolation();
   if(selectionBox){ selectionBox.visible = instance.visible; selectionBox.update(); }
   document.getElementById('apstatus').textContent = 'Transform applied locally. Save layout to keep it.';
+}
+
+function seatSelectedOnBase(){
+  if(selectedAssemblyIndex <= 0 || !assemblyData || !assemblyObjects[0] || !assemblyObjects[selectedAssemblyIndex]){
+    document.getElementById('apstatus').textContent = 'Select a non-base part before seating it.';
+    return;
+  }
+  applyAssemblyEdits();
+  const object = assemblyObjects[selectedAssemblyIndex];
+  const base = assemblyObjects[0];
+  const objectBox = new THREE.Box3().setFromObject(object);
+  const origin = new THREE.Vector3(object.position.x, assemblyFrameBox.max.y + 20, object.position.z);
+  const raycaster = new THREE.Raycaster(origin, new THREE.Vector3(0,-1,0), 0, 1000);
+  const hit = raycaster.intersectObject(base, true)[0];
+  if(!hit){
+    document.getElementById('apstatus').textContent = 'No base surface found below the selected part.';
+    return;
+  }
+  const delta = hit.point.y - objectBox.min.y;
+  object.position.y += delta;
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  instance.position = object.position.toArray().map(value => roundTransform(value));
+  syncTransformInputs();
+  object.updateMatrixWorld(true);
+  if(selectionBox) selectionBox.update();
+  document.getElementById('apstatus').textContent =
+    `Seated on base at Y ${hit.point.y.toFixed(3)} m. Save layout to keep it.`;
 }
 
 async function saveAssembly(){
@@ -585,6 +712,154 @@ async function saveAssembly(){
     body:JSON.stringify({path:assemblyPath, document:assemblyData})});
   const result = await response.json();
   status.textContent = result.ok ? 'Layout saved.' : `Save failed: ${result.error || 'unknown error'}`;
+}
+
+function setTransformMode(mode){
+  transformControls.setMode(mode);
+  document.getElementById('aptranslate').classList.toggle('on', mode === 'translate');
+  document.getElementById('aprotate').classList.toggle('on', mode === 'rotate');
+}
+
+function setTransformSnap(value){
+  const snap = Number(value) || null;
+  transformControls.setTranslationSnap(snap);
+  transformControls.setRotationSnap(snap ? THREE.MathUtils.degToRad(15) : null);
+}
+
+function rebuildReceiverMarkers(){
+  if(receiverRoot){ scene.remove(receiverRoot); disposeTree(receiverRoot); }
+  receiverRoot = new THREE.Group(); receiverRoot.name = 'assembly receivers';
+  const receivers = assemblyData?.receivers || [];
+  receivers.forEach((receiver, index) => {
+    const marker = new THREE.Group();
+    marker.position.fromArray((receiver.position || [0,0,0]).map(Number));
+    const rotation = receiver.rotation || [0,0,0];
+    marker.rotation.set(degrees(+rotation[0]||0), degrees(+rotation[1]||0), degrees(+rotation[2]||0));
+    marker.userData.receiverIndex = index;
+    const radius = Math.max(Number(receiver.radius) || .45, .1);
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, Math.max(radius*.07,.025), 8, 24),
+      new THREE.MeshBasicMaterial({color:0x4ec98a, depthTest:false, transparent:true, opacity:.92})
+    );
+    ring.rotation.x = Math.PI/2;
+    marker.add(ring);
+    const axes = new THREE.AxesHelper(radius * 1.25);
+    axes.renderOrder = 10;
+    marker.add(axes);
+    receiverRoot.add(marker);
+  });
+  scene.add(receiverRoot);
+  receiverRoot.visible = document.getElementById('apreceivers').classList.contains('on');
+}
+
+function populateReceiverInspector(){
+  if(!assemblyData) return;
+  if(!Array.isArray(assemblyData.receivers)) assemblyData.receivers = [];
+  const select = document.getElementById('apreceiver');
+  select.innerHTML = assemblyData.receivers.length
+    ? assemblyData.receivers.map((receiver,index) =>
+        `<option value="${index}">${receiver.id || `receiver-${index+1}`} · ${receiver.accepts || 'any asset'}</option>`).join('')
+    : '<option value="">No receivers recorded</option>';
+  rebuildReceiverMarkers();
+}
+
+function markReceiverAtSelection(){
+  if(selectedAssemblyIndex < 0 || !assemblyData) return;
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  const base = `${instance.id || instance.asset}-receiver`;
+  const used = new Set((assemblyData.receivers || []).map(receiver => receiver.id));
+  let id = base, suffix = 2;
+  while(used.has(id)) id = `${base}-${suffix++}`;
+  assemblyData.receivers.push({
+    id,
+    position:[...(instance.position || [0,0,0])],
+    rotation:[...(instance.rotation || [0,0,0])],
+    accepts:instance.asset,
+    radius:.45,
+  });
+  populateReceiverInspector();
+  document.getElementById('apreceiver').value = String(assemblyData.receivers.length-1);
+  document.getElementById('apstatus').textContent = `Receiver ${id} marked. Save layout to keep it.`;
+}
+
+function snapSelectedToReceiver(){
+  const receiverIndex = Number(document.getElementById('apreceiver').value);
+  const receiver = assemblyData?.receivers?.[receiverIndex];
+  if(selectedAssemblyIndex < 0 || !receiver) return;
+  const instance = assemblyData.instances[selectedAssemblyIndex];
+  instance.position = [...(receiver.position || [0,0,0])].map(Number);
+  instance.rotation = [...(receiver.rotation || [0,0,0])].map(Number);
+  applyInstanceTransform(selectedAssemblyIndex);
+  syncTransformInputs();
+  if(selectionBox) selectionBox.update();
+  document.getElementById('apstatus').textContent = `Snapped to ${receiver.id || 'receiver'}. Save layout to keep it.`;
+}
+
+const REVIEW_VIEWS = {
+  front:       [0, .08, 1], rear:        [0, .08, -1],
+  left:        [-1, .08, 0], right:      [1, .08, 0],
+  top:         [0, 1, 0],
+  'front-left':[-1, .65, 1], 'front-right':[1, .65, 1], 'rear-right':[1, .65, -1],
+};
+
+function setReviewCamera(view){
+  if(!root || !REVIEW_VIEWS[view]) return;
+  currentReviewView = view;
+  const box = assemblyFrameBox.isEmpty() ? new THREE.Box3().setFromObject(root) : assemblyFrameBox;
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z, 1);
+  const fitHeightDistance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * .5)));
+  const direction = new THREE.Vector3(...REVIEW_VIEWS[view]).normalize();
+  const distance = fitHeightDistance * 1.35;
+  camera.up.set(0, view === 'top' ? 0 : 1, view === 'top' ? -1 : 0);
+  camera.position.copy(center).addScaledVector(direction, distance);
+  controls.target.copy(center);
+  camera.lookAt(center);
+  controls.update();
+  document.querySelectorAll('#apcameras button').forEach(button =>
+    button.classList.toggle('on', button.dataset.view === view));
+}
+
+async function saveReviewCapture(view){
+  setReviewCamera(view);
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  const gizmoWasVisible = transformHelper.visible;
+  transformHelper.visible = false;
+  renderer.render(scene, camera);
+  const dataUrl = renderer.domElement.toDataURL('image/png');
+  transformHelper.visible = gizmoWasVisible;
+  const selected = selectedAssemblyIndex < 0 ? null :
+    (assemblyData.instances[selectedAssemblyIndex].id || assemblyData.instances[selectedAssemblyIndex].asset);
+  const response = await fetch('/api/assembly/review-capture', {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({path:assemblyPath, view, data_url:dataUrl, selected_instance:selected})});
+  const result = await response.json();
+  if(!result.ok) throw new Error(result.error || 'capture failed');
+  return result.relative_path;
+}
+
+async function captureCurrentReviewView(){
+  const status = document.getElementById('apstatus');
+  status.textContent = `Capturing ${currentReviewView}…`;
+  try{
+    const path = await saveReviewCapture(currentReviewView);
+    status.textContent = `Saved ${path}`;
+  }catch(error){ status.textContent = `Capture failed: ${error.message}`; }
+}
+
+async function captureReviewSet(){
+  const status = document.getElementById('apstatus');
+  const original = currentReviewView;
+  try{
+    const views = Object.keys(REVIEW_VIEWS);
+    for(let index=0; index<views.length; index++){
+      status.textContent = `Capturing ${index+1}/${views.length}: ${views[index]}…`;
+      await saveReviewCapture(views[index]);
+    }
+    setReviewCamera(original);
+    status.textContent = `Saved ${views.length}-view review set beside the assembly.`;
+  }catch(error){ status.textContent = `Capture set failed: ${error.message}`; }
 }
 
 window.openAssembly = async function(path, name){
@@ -632,10 +907,11 @@ window.openAssembly = async function(path, name){
       await new Promise(resolve => requestAnimationFrame(resolve));
     }
     const box = new THREE.Box3().setFromObject(root);
+    assemblyFrameBox.copy(box);
     lastSize = box.getSize(new THREE.Vector3());
     grid.scale.setScalar(Math.max(lastSize.x,lastSize.y,lastSize.z,1)/2.4);
-    frameCamera();
     populateAssemblyInspector();
+    setReviewCamera('front-right');
     document.getElementById('vstats').textContent =
       `${assemblyData.instances.length} parts · ${entries.length} source GLBs · ` +
       `${Math.round(renderedTris).toLocaleString()} rendered tris · normalized metres`;
@@ -674,18 +950,43 @@ document.getElementById('vparts').onclick = e => {
   e.target.classList.toggle('on', !panel.hidden);
 };
 document.getElementById('apart').onchange = e => selectAssemblyPart(Number(e.target.value));
+document.getElementById('aptranslate').onclick = () => setTransformMode('translate');
+document.getElementById('aprotate').onclick = () => setTransformMode('rotate');
+document.getElementById('apsnap').onchange = event => setTransformSnap(event.target.value);
+document.getElementById('apisolate').onclick = event => {
+  isolateSelected = !isolateSelected;
+  event.target.classList.toggle('on', isolateSelected);
+  event.target.textContent = isolateSelected ? 'Show all' : 'Isolate';
+  refreshIsolation();
+};
+document.getElementById('apreceivers').onclick = event => {
+  const visible = !event.target.classList.contains('on');
+  event.target.classList.toggle('on', visible);
+  if(receiverRoot) receiverRoot.visible = visible;
+};
+document.getElementById('apsnaptoreceiver').onclick = snapSelectedToReceiver;
+document.getElementById('apmarkreceiver').onclick = markReceiverAtSelection;
+document.querySelectorAll('#apcameras button').forEach(button =>
+  button.onclick = () => setReviewCamera(button.dataset.view));
+document.getElementById('apcapture').onclick = captureCurrentReviewView;
+document.getElementById('apcaptureset').onclick = captureReviewSet;
 document.getElementById('apapply').onclick = applyAssemblyEdits;
+document.getElementById('apseat').onclick = seatSelectedOnBase;
 document.getElementById('apsave').onclick = saveAssembly;
 document.getElementById('vreset').onclick = () => { if(root){ root.rotation.set(0,0,0); frameCamera(); } };
 stage.addEventListener('dblclick', pickAssemblyPart);
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') document.getElementById('viewer').classList.remove('on');
+  if(viewerMode === 'assembly' && !['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)){
+    if(e.key.toLowerCase() === 'w') setTransformMode('translate');
+    if(e.key.toLowerCase() === 'e') setTransformMode('rotate');
+  }
 });
 </script>
 
 <script>
 const $ = id => document.getElementById(id);
-const UI_VERSION = '1.2.0';
+const UI_VERSION = '1.3.0';
 let state = { path:null, selected:[], polling:null, meshyMax:4, localAvailable:true };
 
 async function api(route, opts){ const r = await fetch(route, opts); return r.json(); }

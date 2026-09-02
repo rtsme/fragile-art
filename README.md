@@ -95,18 +95,20 @@ gitignored until reviewed and deliberately promoted.
 race direction
   → approved dressed concept
   → exact shared-asset audit
-  → body-only base source
-  → one consistent four-view reference set
+  → textured body-only base source
+  → one consistent textured four-view reference set
   → base + isolated shared-object generation
-  → concept-conditioned base retexture
+  → optional concept-conditioned texture refinement
   → modular assembly
   → cleanup, LOD/collision and game export
 ```
 
-The approved dressed concept is the final visual target. It is never used to generate the base
-geometry. The base is generated from body-only references; doors, windows, vents, tanks, pipes,
-antennae, lights, railings, stairs and other detachable details are independent shared assets. The
-final concept may be supplied later only as a texture/style reference for the completed base.
+The approved dressed concept is the final visual target. It is never used as base-geometry input.
+The base is generated from textured body-only references: broad approved material zones, macro wear
+and colour hierarchy stay visible, while doors, windows, vents, tanks, pipes, antennae, lights,
+railings, stairs and other detachable details remain independent shared assets. The final concept
+may be used as a material/style reference while making the body-only source and again in an optional
+texture-only refinement pass; neither use authorizes geometry changes or painted fake attachments.
 
 ## Non-negotiable generation rules
 
@@ -115,7 +117,9 @@ These rules apply to every race. The full contract and examples are in the
 [`concept-rules-for-3d.md`](docs/concept-rules-for-3d.md).
 
 1. Lock and version the final concept; never overwrite an approved revision.
-2. Generate only body-only structural bases. Every detachable detail is a shared component.
+2. Generate only body-only structural bases. "Body-only" controls geometry, not materials: retain
+   broad approved texture/material zoning and macro wear. Every detachable detail is a shared
+   component, and must not be painted back as fake geometry.
 3. Map every visible detail to an exact component ID and receiver before base generation. Missing
    parts are `NEW SHARED ASSET REQUIRED`, never improvised into the base.
 4. Use solid enclosed volumes, closed silhouettes, broad planes and deep breaks. No open lattice,
@@ -134,8 +138,9 @@ These rules apply to every race. The full contract and examples are in the
     component connection face independently.
 11. Leave Meshy remesh off for maximum-detail sources. Retopology/decimation is a later reviewed
     operation; generated output is not automatically game-ready.
-12. Retexture only after geometry approval. Preserve original UVs, request PBR/4K, and reject any
-    painted-on fake doors, windows, pipes, antennae or other shared details.
+12. Use post-generation retexture only after geometry approval, as refinement or repair—not as the
+    first texture application. Preserve original UVs, request PBR/4K, and reject any painted-on fake
+    doors, windows, pipes, antennae or other shared details.
 13. Never apply one seamless material image across a unique baked UV atlas. The Command Centre
     trial proved that this produces uniform surface noise and destroys deliberate material zones.
 14. Inspect front, rear, both sides and roof at every geometry, texture and assembly gate.
@@ -151,6 +156,15 @@ Validate a four-view package:
 
 ```powershell
 python tools/check-views.py <front.png> <back.png> <left.png> <right.png>
+```
+
+Mechanically crop a generated 2×2 sheet in front/back/left/right order. Use the gutter option only
+when the generator drew centre divider pixels:
+
+```powershell
+python tools/crop-reference-sheet.py <sheet.png> `
+  --output-dir <reference-folder> --stem <ASSET-ID_base> --version v01 `
+  --center-gutter-px 3
 ```
 
 Generate a maximum-detail base or isolated shared object with Meshy:

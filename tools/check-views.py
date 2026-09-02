@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from collections import deque
 from pathlib import Path
 
 import numpy as np
@@ -31,14 +32,53 @@ FAIL_PCT = 10.0
 BG_TOLERANCE = 40          # per-pixel colour distance that counts as "not background"
 
 
+def remove_border_components(mask: np.ndarray) -> np.ndarray:
+    """Discard dividers, frames and gradient regions connected to the canvas edge."""
+    height, width = mask.shape
+    border = np.zeros_like(mask, dtype=bool)
+    pending: deque[tuple[int, int]] = deque()
+
+    for x in range(width):
+        if mask[0, x]:
+            pending.append((0, x))
+        if mask[height - 1, x]:
+            pending.append((height - 1, x))
+    for y in range(1, height - 1):
+        if mask[y, 0]:
+            pending.append((y, 0))
+        if mask[y, width - 1]:
+            pending.append((y, width - 1))
+
+    while pending:
+        y, x = pending.popleft()
+        if border[y, x] or not mask[y, x]:
+            continue
+        border[y, x] = True
+        if y:
+            pending.append((y - 1, x))
+        if y + 1 < height:
+            pending.append((y + 1, x))
+        if x:
+            pending.append((y, x - 1))
+        if x + 1 < width:
+            pending.append((y, x + 1))
+
+    return mask & ~border
+
+
 def silhouette(path: Path) -> dict | None:
     im = Image.open(path).convert("RGB")
     a = np.asarray(im).astype(np.int16)
     bg = a[2, 2]                                  # a flat corner is the background
-    mask = np.abs(a - bg).sum(2) > BG_TOLERANCE
+    raw_mask = np.abs(a - bg).sum(2) > BG_TOLERANCE
+    mask = remove_border_components(raw_mask)
     ys, xs = np.nonzero(mask)
     if len(xs) == 0:
-        return None
+        return {
+            "name": path.name,
+            "canvas": list(im.size),
+            "error": "no interior silhouette found after removing border-connected artifacts",
+        }
     return {
         "name": path.name,
         "canvas": list(im.size),
@@ -62,11 +102,16 @@ def view_role(name: str) -> str | None:
 
 
 def check(paths: list[Path]) -> dict:
-    views = [v for v in (silhouette(p) for p in paths) if v]
+    measured = [v for v in (silhouette(p) for p in paths) if v]
+    views = [v for v in measured if "error" not in v]
     issues: list[dict] = []
 
+    for view in measured:
+        if "error" in view:
+            issues.append({"level": "fail", "rule": "silhouette", "detail": f"{view['name']}: {view['error']}"})
+
     if len(views) < 2:
-        return {"ok": True, "views": views, "issues": []}
+        return {"ok": not issues, "views": views, "issues": issues}
 
     def add(level, rule, detail):
         issues.append({"level": level, "rule": rule, "detail": detail})

@@ -36,11 +36,13 @@ production folders are not committed in advance.
 
 1. **The root concept is final.** `<Asset ID>_concept_vNN.png` is the immutable final appearance
    target for that approved revision. It may show the fully dressed building, but it is never sent
-   to geometry generation. After the base geometry passes review, it may be supplied to a
-   texture-only retexture pass strictly as a palette/material-style reference.
+   as geometry input. It may guide broad material zoning while the body-only source is created and,
+   after geometry review, may be supplied to an optional texture-only refinement pass. Both uses are
+   palette/material references only.
 2. **Generate only the base.** The generator receives only images from `Base/` and
    `References/.../Base/`. The base contains the foundation, load-bearing walls, roofs, towers,
-   large overhangs, deep structural setbacks and silhouette-defining structural masses.
+   large overhangs, deep structural setbacks and silhouette-defining structural masses. Those images
+   retain approved broad material zones and macro wear; body-only does not mean untextured clay.
 3. **Every detachable detail is separate.** Doors, glazing, vents, fans, tanks, pipes, antennas,
    dishes, lights, railings, stairs, ramps, equipment boxes, access panels and similar fittings
    are shared assets. They are not painted onto or modelled into the generated base.
@@ -73,10 +75,11 @@ detail defeats the purpose of the pipeline.
 1. Lock the final concept revision.
 2. Inventory every detachable visible detail and map it to exact shared IDs.
 3. Resolve or record all shared-library gaps.
-4. Produce the body-only concept and a socket schedule.
-5. Produce one consistent four-view body-only reference set.
+4. Produce the textured body-only concept and a socket schedule.
+5. Produce one consistent textured four-view body-only reference set.
 6. Generate and clean the base mesh.
-7. Retexture the approved base from the final concept; reject painted-on shared details.
+7. Optionally refine or repair the approved base texture from the final concept; reject painted-on
+   shared details and preserve geometry.
 8. Generate or model each missing shared component in isolation, once.
 9. Assemble shared meshes onto the base using the socket schedule.
 10. Compare the dressed assembly with the locked final concept and sign off.

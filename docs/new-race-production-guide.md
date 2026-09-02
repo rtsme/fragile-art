@@ -248,6 +248,12 @@ setbacks and silhouette-defining buttresses. Remove every detachable detail and 
 locations with a closed recess, flush pad or simple S1-S4 receiver. The base should look deliberately
 plain and unfinished.
 
+Body-only controls **geometry**, not materials. Retain the approved race palette, broad architectural
+material zones and macro-scale wear from the final concept/material library. Do not convert the
+production source to uniform clay. Texture may describe an existing plane or receiver, but it must
+not paint a door, window, vent, pipe, panel, seam, recess or other detachable/fake geometric feature
+onto a surface that does not physically contain it.
+
 Structure-versus-detail test: if removing a form breaks the primary silhouette or continuity of a
 load-bearing mass, it stays in the base. If it has its own function, replacement seam, material break
 or mounting interface, it is separate. When uncertain, separate it.
@@ -275,11 +281,22 @@ Reference-generation rules:
    one of those valid comparisons is a hard failure.
 4. Subject-centre drift under 2% of the canvas.
 5. Every view describes exactly the same geometry and asymmetry.
-6. Neutral background and flat lighting, with no ground shadow.
-7. Crop from a single generated sheet, with no creative repainting per view.
-8. Save and submit in this exact order: **front, back, left, right**. Front is primary.
-9. Top/bottom are optional authoring references only; Meshy's multi-image job accepts at most four
+6. Preserve the exact body-only material zones, texture scale, colour placement and wear logic in
+   every view. Do not replace the materials with clay and do not invent painted geometry.
+7. Neutral background and flat lighting, with no ground shadow.
+8. Crop from a single generated sheet, with no creative repainting per view.
+9. Save and submit in this exact order: **front, back, left, right**. Front is primary.
+10. Top/bottom are optional authoring references only; Meshy's multi-image job accepts at most four
    inputs in this pipeline.
+
+Crop a sheet mechanically with the repository helper. If the generator drew thin centre divider
+lines, exclude only those pixels with `--center-gutter-px`; do not resize or repaint the subjects:
+
+```powershell
+python tools/crop-reference-sheet.py <sheet.png> `
+  --output-dir <reference-folder> --stem <ASSET-ID_base> --version v01 `
+  --center-gutter-px 3
+```
 
 Validate before spending credits:
 
@@ -334,7 +351,7 @@ Mesh-generation rules:
 
 1. Re-run the reference check immediately before submission.
 2. Confirm the output path, estimated cost and front-first order before submitting.
-3. Generate the body-only base, never the dressed final concept.
+3. Generate the textured body-only base, never the dressed final concept or a clay-only substitute.
 4. Use Meshy's latest model, PBR and 4K for a maximum-detail source.
 5. Leave remesh **off** for the source; remeshing/decimation is a later inspected step.
 6. Never assume AI scale. Set and verify 1 unit = 1 metre during cleanup.
@@ -347,11 +364,13 @@ Raw `*_hq_*`, `*_ai_*` and `*_experiment_*` outputs are gitignored. After approv
 mesh to a clearly versioned non-temporary filename or force-add the reviewed source deliberately.
 Never force-add an unreviewed generation merely to make an assembly portable.
 
-### Stage G — texture the base from the approved concept
+### Stage G — optionally refine or repair the base texture
 
-The proven trial route is Meshy's texture-only retexture pass. It uses the approved final concept as
-a **style/material reference**, while preserving the already generated geometry and original UVs.
-This is the only permitted use of the dressed concept in the generation pipeline.
+When the textured base generated from the orthographic package needs improvement, Meshy's
+texture-only retexture pass may refine it. It uses the approved final concept as a
+**style/material reference**, while preserving the already generated geometry and original UVs.
+This is refinement or repair, not the first texture application. The dressed concept may also guide
+material zoning while the body-only source is authored, but it is never geometry input.
 
 ```powershell
 python tools/art-forge/run-meshy-retexture-cli.py `

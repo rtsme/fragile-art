@@ -44,6 +44,11 @@ and read well at gameplay distance. Fine mechanical filigree does not survive.
 **A5 — No free-standing thin elements.** Wires, cables, chains, aerials, thin handrails, ladders.
 **Instead:** railings become **solid low parapets**; conduits become raised ribs on a surface.
 
+**Pipeline rule — no railings in Meshy reconstruction inputs.** Do not draw rail-form geometry in
+single-image or multiview inputs, including low-detail monolithic buildings. Meshy may fuse occluded
+rails into nearby machinery at maximum detail or collapse them into spikes during remesh. Omit them
+entirely; use a broad solid parapet only when that parapet is part of the building's primary massing.
+
 **A6 — Keep the silhouette closed.** Avoid negative space you can see through. Enclosed volumes
 reconstruct reliably; gaps invite noise.
 
@@ -131,10 +136,15 @@ main structural shell and replaces every detachable detail with a closed recess,
 receiver. Generate the shell from body-only orthographic references; generate or model reusable
 details separately and attach them afterwards.
 
-After the base geometry passes review, the final concept may be used in a **texture-only** pass as
-a palette/material-style reference. That pass must preserve geometry and be rejected if it paints
-shared doors, glazing, vents, pipes, railings, antennae or other attachments onto unrelated shell
-surfaces.
+"Body-only" describes the geometry split, not a clay render. Keep broad approved material zones,
+race colour hierarchy and macro-scale wear in the body-only concept and every orthographic view.
+Textures must describe existing surfaces only: do not paint fake doors, glazing, vents, pipes,
+railings, antennae, panels, seams or recesses where no corresponding form or receiver exists.
+
+After the base geometry passes review, the final concept may also be used in an optional
+**texture-only** refinement pass as a palette/material-style reference. That pass must preserve
+geometry and be rejected if it paints shared attachments onto unrelated shell surfaces. It refines
+or repairs the texture already established by the references; it is not the first texture stage.
 
 This rule applies even when a shared component is individually reconstruction-safe. The point is
 to stop the parent generator from having to resolve many small adjacent details at building scale.
