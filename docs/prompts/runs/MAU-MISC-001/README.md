@@ -25,3 +25,8 @@ rules held even for cranes and scaffolding. Four deviations:
 
 The background matters because the pipeline's reference and background-removal steps expect a plain
 flat light-grey field; a vignette would corrupt them. The added titles are cosmetic.
+
+**2026-09-22 20:36, re-rolls.** ENV-INF-001 v02 saved and fixes both faults: one flat light-grey field
+edge to edge, no hazard striping, legible labels, one emblem on the large plinth. PRP-IND-006 v02 hit
+the usage limit (resets 2026-09-23 00:05) and is queued; its v01 stays usable for reference but should
+not go to the reference stage while the background is a vignette.
