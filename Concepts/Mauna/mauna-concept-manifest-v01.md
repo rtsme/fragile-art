@@ -117,7 +117,7 @@ game's structure list is shared across factions. Only the anchor has a Mauna wor
 | MAU-SHP-006 | Command Cruiser | concept v01 generated, awaiting verdict |
 | MAU-SHP-007 | Fleet Battleship | concept v01 approved |
 | MAU-MIS-ORD-001–003, MAU-SAT-ORB-001–003 | missiles and satellites | all generated, awaiting verdict |
-| MAU-ENV-INF-001–002, MAU-PRP-IND-001–007, MAU-PRP-CON-001–002 | environment and prop kits | all generated, awaiting verdict; ENV-INF-001 v02 fixed (flat grey, no striping); PRP-IND-006 v02 queued |
+| MAU-ENV-INF-001–002, MAU-PRP-IND-001–007, MAU-PRP-CON-001–002 | environment and prop kits | all generated, awaiting verdict; ENV-INF-001 and PRP-IND-006 fixed at v02 (flat grey field) |
 
 ## Ship scale, measured from the generated models (2026-09-14)
 

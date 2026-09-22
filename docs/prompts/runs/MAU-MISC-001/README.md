@@ -30,3 +30,7 @@ flat light-grey field; a vignette would corrupt them. The added titles are cosme
 edge to edge, no hazard striping, legible labels, one emblem on the large plinth. PRP-IND-006 v02 hit
 the usage limit (resets 2026-09-23 00:05) and is queued; its v01 stays usable for reference but should
 not go to the reference stage while the background is a vignette.
+
+**2026-09-23 00:07.** PRP-IND-006 v02 saved: flat light-grey field, legible labels, no vignette. Both
+background faults are now fixed, and every asset in this batch is reference-stage ready. The only
+remaining deviations are the cosmetic title lines on PRP-IND-004 and PRP-IND-007.
