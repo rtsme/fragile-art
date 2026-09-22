@@ -156,7 +156,10 @@ known shared-asset dependencies. Do not encode mutable status only in filenames.
 
 ## 3. Naming and versioning
 
-- Asset IDs are uppercase and stable: `<CATEGORY>-<ROLE>-NNN`, for example `BLD-CMD-001`.
+- Asset IDs are uppercase, stable and **race-prefixed**: `<RACE>-<CATEGORY>-<ROLE>-NNN`, for example
+  `MAU-BLD-CMD-001`; ships use `<RACE>-SHP-NNN`, for example `MAU-SHP-001`. The prefix keeps IDs
+  unique across races in the shared tracker. The Terran set predates this rule and keeps its
+  original IDs (`BLD-CMD-001`, `SHP-TER-001`); do not rename them.
 - Shared IDs start with the race code and identify an exact interchangeable object, for example
   `<RACE>-VNT-FAN-L`. A family code such as `<RACE>-VNT` is not an assembly-ready ID.
 - Standard sizes use `S`, `M`, `L` only when the production specification defines their envelopes.

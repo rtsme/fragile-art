@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1600" height="1000" fill="#d9d8d4"/>
+
+  <!-- Title -->
+  <text x="60" y="68" font-size="34" font-weight="700" fill="#2a2b2d">MAUNA — smuggler salvage · visual direction v01</text>
+  <text x="60" y="102" font-size="17" fill="#55585c">APPROVED by owner 2026-09-14 · flat silhouette and palette blocking only · not an image-generation or Meshy input</text>
+  <line x1="60" y1="120" x2="1540" y2="120" stroke="#a39a88" stroke-width="2"/>
+
+  <text x="60" y="158" font-size="19" font-weight="600" fill="#2a2b2d">Anchor · MAU-BLD-CMD-001 Exchange: grounded, inverted freighter hull (70 × 55 × 35 m)</text>
+  <text x="1040" y="158" font-size="19" font-weight="600" fill="#2a2b2d">Ships · top view, nose right, relative scale</text>
+  <line x1="1000" y1="140" x2="1000" y2="880" stroke="#bdb8ae" stroke-width="2"/>
+
+  <!-- ===================== BUILDING ===================== -->
+  <!-- plinth -->
+  <polygon points="200,640 560,820 560,862 200,682" fill="#3b3d40"/>
+  <polygon points="560,820 920,640 920,682 560,862" fill="#2a2b2d"/>
+  <polygon points="200,640 560,460 920,640 560,820" fill="#55585c"/>
+  <polygon points="250,640 560,485 870,640 560,795" fill="#4a4c50"/>
+
+  <!-- counterweight tower (behind dome) -->
+  <polygon points="470,420 500,250 515,248 510,410" fill="#9c7a52"/>
+  <polygon points="510,410 515,248 530,245 548,402" fill="#56402a"/>
+  <polygon points="486,330 540,322 542,340 484,348" fill="#9e2a3a"/>
+  <polygon points="490,252 520,234 544,246 514,264" fill="#55585c"/>
+  <polygon points="490,252 514,264 514,276 490,264" fill="#3b3d40"/>
+  <polygon points="514,264 544,246 544,258 514,276" fill="#2a2b2d"/>
+
+  <!-- inverted hull dome -->
+  <path d="M360,640 A200,262 0 0 1 760,640 A200,100 0 0 1 360,640 Z" fill="#7a5a3a"/>
+  <path d="M560,378 A200,262 0 0 1 760,640 A200,100 0 0 1 560,740 Q650,560 560,378 Z" fill="#56402a"/>
+  <path d="M430,470 Q470,410 540,388 Q480,440 460,520 Z" fill="#9c7a52"/>
+  <!-- verdigris patch plates (stepped) -->
+  <polygon points="410,520 492,478 504,560 424,604" fill="#4f7d70"/>
+  <polygon points="424,604 504,560 508,572 428,616" fill="#375a50"/>
+  <polygon points="598,448 664,468 660,524 596,506" fill="#375a50"/>
+  <!-- crimson trade band (flat decal) -->
+  <path d="M372,590 Q560,520 748,590 L752,610 Q560,540 368,610 Z" fill="#9e2a3a"/>
+  <!-- glazing slit -->
+  <path d="M470,470 Q560,440 650,470 L648,486 Q560,457 472,486 Z" fill="#15181a"/>
+  <!-- flush smuggler hatch -->
+  <path d="M515,736 L515,676 Q560,654 605,676 L605,736 Q560,748 515,736 Z" fill="#2a2b2d"/>
+  <path d="M526,730 L526,684 Q560,667 594,684 L594,730 Q560,739 526,730 Z" fill="#3b3d40"/>
+  <polygon points="545,650 560,640 575,650 560,660" fill="#9e2a3a"/>
+
+  <!-- salvaged off-white block, welded on -->
+  <polygon points="230,600 330,550 410,590 310,640" fill="#ddd5c3"/>
+  <polygon points="230,600 310,640 310,722 230,682" fill="#c9c0ad"/>
+  <polygon points="310,640 410,590 410,672 310,722" fill="#a39a88"/>
+  <polygon points="310,668 410,618 410,634 310,684" fill="#3b3d40"/>
+  <polygon points="244,626 296,652 296,668 244,642" fill="#15181a"/>
+  <!-- clamp collar joining block to dome -->
+  <ellipse cx="396" cy="604" rx="24" ry="46" fill="#3b3d40"/>
+  <ellipse cx="398" cy="604" rx="13" ry="30" fill="#2a2b2d"/>
+
+  <!-- dish: thick bowl on block mount -->
+  <polygon points="684,478 702,468 718,476 700,486" fill="#55585c"/>
+  <polygon points="684,478 700,486 700,506 684,498" fill="#3b3d40"/>
+  <polygon points="700,486 718,476 718,496 700,506" fill="#2a2b2d"/>
+  <rect x="694" y="442" width="14" height="36" fill="#3b3d40"/>
+  <ellipse cx="702" cy="432" rx="44" ry="21" fill="#55585c" stroke="#2a2b2d" stroke-width="6" transform="rotate(-18 702 432)"/>
+  <ellipse cx="702" cy="430" rx="28" ry="11" fill="#2a2b2d" transform="rotate(-18 702 430)"/>
+
+  <!-- clamped cargo pod rack -->
+  <g transform="rotate(-26.5 790 610)">
+    <rect x="720" y="585" width="140" height="44" rx="22" fill="#7a5a3a"/>
+    <rect x="720" y="607" width="140" height="22" rx="11" fill="#56402a"/>
+    <rect x="770" y="578" width="14" height="58" rx="3" fill="#3b3d40"/>
+  </g>
+  <g transform="rotate(-26.5 780 670)">
+    <rect x="700" y="645" width="160" height="50" rx="25" fill="#4f7d70"/>
+    <rect x="700" y="670" width="160" height="25" rx="12" fill="#375a50"/>
+    <rect x="735" y="638" width="14" height="64" rx="3" fill="#3b3d40"/>
+    <rect x="810" y="638" width="14" height="64" rx="3" fill="#3b3d40"/>
+  </g>
+  <g transform="rotate(-26.5 700 735)">
+    <rect x="640" y="714" width="120" height="42" rx="21" fill="#c9c0ad"/>
+    <rect x="640" y="735" width="120" height="21" rx="10" fill="#a39a88"/>
+    <rect x="690" y="707" width="14" height="56" rx="3" fill="#3b3d40"/>
+  </g>
+
+  <!-- building callouts -->
+  <g font-size="15" fill="#2a2b2d" stroke="none">
+    <line x1="505" y1="300" x2="360" y2="262" stroke="#55585c" stroke-width="1.5"/>
+    <text x="90" y="258">counterweight tower (solid, tapered)</text>
+    <line x1="640" y1="420" x2="760" y2="330" stroke="#55585c" stroke-width="1.5"/>
+    <text x="766" y="326">inverted hull = the building</text>
+    <line x1="746" y1="428" x2="800" y2="400" stroke="#55585c" stroke-width="1.5"/>
+    <text x="806" y="398">thick-bowl dish</text>
+    <line x1="748" y1="600" x2="790" y2="530" stroke="#55585c" stroke-width="1.5"/>
+    <text x="760" y="520">crimson = flat decals only</text>
+    <line x1="396" y1="560" x2="250" y2="455" stroke="#55585c" stroke-width="1.5"/>
+    <text x="90" y="448">clamp collar (solid ring)</text>
+    <line x1="260" y1="600" x2="160" y2="540" stroke="#55585c" stroke-width="1.5"/>
+    <text x="90" y="530">whole salvaged block, welded</text>
+    <line x1="515" y1="720" x2="360" y2="800" stroke="#55585c" stroke-width="1.5"/>
+    <text x="210" y="818">flush smuggler hatch</text>
+    <line x1="820" y1="690" x2="840" y2="760" stroke="#55585c" stroke-width="1.5"/>
+    <text x="760" y="780">clamped cargo pods</text>
+  </g>
+
+  <!-- ===================== SHIPS ===================== -->
+  <!-- Scout -->
+  <rect x="1068" y="229" width="100" height="36" rx="18" fill="#3b3d40"/>
+  <rect x="1054" y="233" width="20" height="28" rx="5" fill="#2a2b2d"/>
+  <path d="M1110,272 C1150,232 1260,238 1330,272 C1260,306 1150,312 1110,272 Z" fill="#7a5a3a"/>
+  <path d="M1110,272 L1330,272 C1260,306 1150,312 1110,272 Z" fill="#56402a"/>
+  <polygon points="1170,258 1215,252 1218,268 1172,272" fill="#4f7d70"/>
+  <rect x="1150" y="289" width="76" height="28" rx="14" fill="#c9c0ad"/>
+  <rect x="1180" y="284" width="11" height="38" rx="3" fill="#3b3d40"/>
+  <ellipse cx="1276" cy="264" rx="22" ry="5" fill="#15181a"/>
+  <polygon points="1232,272 1252,272 1248,282 1228,282" fill="#9e2a3a"/>
+  <text x="1040" y="352" font-size="16" fill="#2a2b2d"><tspan font-weight="600">MAU-SHP-001 Scoutship</tspan> · one oversized engine, pod as counterweight</text>
+
+  <!-- Transport -->
+  <rect x="1050" y="440" width="90" height="40" rx="20" fill="#3b3d40"/>
+  <rect x="1036" y="486" width="104" height="52" rx="26" fill="#3b3d40"/>
+  <rect x="1066" y="544" width="70" height="30" rx="15" fill="#3b3d40"/>
+  <rect x="1038" y="446" width="16" height="28" rx="4" fill="#2a2b2d"/>
+  <rect x="1024" y="492" width="18" height="40" rx="4" fill="#2a2b2d"/>
+  <rect x="1056" y="549" width="14" height="20" rx="4" fill="#2a2b2d"/>
+  <ellipse cx="1275" cy="505" rx="155" ry="72" fill="#7a5a3a"/>
+  <path d="M1120,505 A155,72 0 0 0 1430,505 Z" fill="#56402a"/>
+  <polygon points="1230,452 1300,446 1306,474 1236,482" fill="#4f7d70"/>
+  <polygon points="1170,520 1230,516 1234,548 1174,552" fill="#375a50"/>
+  <rect x="1250" y="560" width="110" height="10" rx="3" fill="#2a2b2d"/>
+  <rect x="1196" y="428" width="20" height="154" rx="6" fill="#3b3d40"/>
+  <rect x="1334" y="428" width="20" height="154" rx="6" fill="#3b3d40"/>
+  <rect x="1362" y="440" width="10" height="130" fill="#9e2a3a"/>
+  <polygon points="1420,474 1496,480 1508,500 1424,514" fill="#c9c0ad"/>
+  <polygon points="1424,500 1508,500 1424,514" fill="#a39a88"/>
+  <polygon points="1470,484 1494,488 1498,497 1472,497" fill="#15181a"/>
+  <text x="1040" y="618" font-size="16" fill="#2a2b2d"><tspan font-weight="600">MAU-SHP-003 Hauler</tspan> · belly ≫ cockpit, three unequal engines</text>
+
+  <!-- Destroyer -->
+  <g transform="translate(62 0)">
+  <rect x="990" y="716" width="62" height="36" rx="18" fill="#3b3d40"/>
+  <rect x="972" y="760" width="80" height="48" rx="24" fill="#3b3d40"/>
+  <rect x="980" y="722" width="14" height="24" rx="4" fill="#2a2b2d"/>
+  <rect x="962" y="768" width="16" height="32" rx="4" fill="#2a2b2d"/>
+  <polygon points="1060,708 1250,714 1250,806 1060,812 1040,792 1040,728" fill="#c9c0ad"/>
+  <polygon points="1040,760 1250,760 1250,806 1060,812 1040,792" fill="#a39a88"/>
+  <path d="M1250,724 L1440,729 Q1540,760 1440,791 L1250,796 Z" fill="#4f7d70"/>
+  <path d="M1250,760 L1490,760 Q1470,786 1440,791 L1250,796 Z" fill="#375a50"/>
+  <rect x="1236" y="698" width="28" height="124" rx="6" fill="#3b3d40"/>
+  <rect x="1286" y="746" width="136" height="28" rx="14" fill="#7a5a3a"/>
+  <rect x="1286" y="760" width="136" height="14" rx="7" fill="#56402a"/>
+  <rect x="1338" y="720" width="42" height="12" rx="3" fill="#2a2b2d"/>
+  <circle cx="1330" cy="726" r="17" fill="#55585c"/>
+  <rect x="1142" y="782" width="50" height="14" rx="3" fill="#2a2b2d"/>
+  <circle cx="1132" cy="789" r="21" fill="#55585c"/>
+  <rect x="1098" y="722" width="80" height="12" rx="3" fill="#3b3d40"/>
+  <rect x="1404" y="741" width="26" height="7" rx="3" fill="#15181a"/>
+  <polygon points="1462,752 1484,760 1462,768" fill="#9e2a3a"/>
+  <polygon points="1444,752 1462,760 1444,768" fill="#9e2a3a"/>
+  </g>
+  <text x="1040" y="862" font-size="16" fill="#2a2b2d"><tspan font-weight="600">MAU-SHP-007 Fleet Battleship</tspan> · two hulls joined at one collar</text>
+
+  <!-- ===================== PALETTE ===================== -->
+  <line x1="60" y1="880" x2="1540" y2="880" stroke="#a39a88" stroke-width="2"/>
+  <g font-size="14" fill="#2a2b2d">
+    <rect x="60" y="900" width="70" height="44" fill="#7a5a3a"/><rect x="60" y="930" width="70" height="14" fill="#56402a"/>
+    <text x="60" y="966">bronze hull</text>
+    <rect x="180" y="900" width="70" height="44" fill="#4f7d70"/><rect x="180" y="930" width="70" height="14" fill="#375a50"/>
+    <text x="180" y="966">verdigris patch</text>
+    <rect x="300" y="900" width="70" height="44" fill="#c9c0ad"/><rect x="300" y="930" width="70" height="14" fill="#a39a88"/>
+    <text x="300" y="966">salvaged off-white</text>
+    <rect x="440" y="900" width="70" height="44" fill="#3b3d40"/><rect x="440" y="930" width="70" height="14" fill="#2a2b2d"/>
+    <text x="440" y="966">gunmetal collar</text>
+    <rect x="570" y="900" width="70" height="44" fill="#15181a"/>
+    <text x="570" y="966">opaque glazing</text>
+    <rect x="690" y="900" width="70" height="44" fill="#9e2a3a"/>
+    <text x="690" y="966">Mauna crimson (decal)</text>
+  </g>
+  <g font-size="14" fill="#2a2b2d">
+    <text x="900" y="912" font-weight="600">3D-safe salvage: express it with mismatched SOLID masses</text>
+    <text x="900" y="936">✓ whole welded sections · clamp collars · capsule pods · stepped thick patches · flush hatches</text>
+    <text x="900" y="960">✗ rope, nets, straps, cables · holes / see-through rust · tarps · thin aerials · hazard stripes</text>
+    <text x="900" y="984">Asymmetric always, with a counterweight. One hidden-cargo feature per asset.</text>
+  </g>
+</svg>
