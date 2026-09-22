@@ -23,3 +23,13 @@ segmented hangar door, so the silhouette is closed (concept rule A6). Both keep 
 **2026-09-22 15:0x, run 1 (2 parallel).** MAU-SHP-002 and MAU-SHP-004 saved; the other four hit the
 Codex usage limit (resets 19:02). Both saved ships hold the approved look, keep engines built into the
 hull rather than on pylons, and carry the crescent emblem. `wait_and_run.sh` is waiting out the reset.
+
+**2026-09-22 19:05, run 2 (watcher, 2 parallel).** All four remaining jobs saved by 19:09:
+MAU-SHP-005, MAU-SHP-006, LOG-002 v02 and LOG-003 v02. **The Mauna set is now complete: 45 buildings
+and 7 ships.**
+
+Review: both fixes worked — LOG-002 v02 has no hazard striping (plain worn plating, one small emblem)
+and LOG-003 v02 closes the repair bay with a flush segmented door, so the silhouette is solid. The
+Terminator reads as a heavy armoured hull, though its spinal weapon is subtler than the prompt asked
+for. One note for cleanup: the Command Cruiser carries a thin twin-barrel turret at the bow, which is
+the kind of thin element rule A5 warns about; everything else on both ships is solid.
