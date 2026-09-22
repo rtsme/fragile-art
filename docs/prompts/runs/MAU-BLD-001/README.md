@@ -50,3 +50,14 @@ change worked, and the three re-rolls no longer copy the Exchange (CMD-002 is a 
 fortress, LIF-001 a mostly off-white capsule, LIF-003 has no dome). Minor notes for cleanup, not
 regeneration: MIN-002's screw drills hang below the plinth line, and PWR-003 uses crimson arrow
 marks rather than the emblem.
+
+**2026-09-22 14:02, run 4 (watcher, 2 parallel).** The remaining 18 saved in one window: LOG-002–004,
+DEF-001–008, SEN-001–002, TEC-001–005. **All 45 building concepts now exist.** `wait_and_run.sh` waited
+out the 13:58 reset and exited at 14:21 once the count was complete.
+
+Review: all 18 hold the approved look and read as their own buildings — cupola turrets on heavy
+turntables, a closed-cell anti-missile pod, the split silo hatch with the emblem, the bunker's slit
+ports, the thick-bowl sensor dish, the clamped gravity rings, the asteroid engine's huge thrust bell
+and the teleport pad in its three pylons. Two deviations for cleanup, not regeneration: LOG-002 carries
+red diagonal hazard stripes (a prohibited Terran motif) and LOG-003's repair bay is an open recess
+(negative space, rule A6) — both were invited by their own prompt wording.

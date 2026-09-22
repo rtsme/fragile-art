@@ -2,7 +2,7 @@
 
 Started 2026-09-14. Race: **Mauna** / folder `Mauna` / code **`MAU`**.
 Status: **style direction approved by the owner 2026-09-14** (look, palette and silhouette sheet).
-Buildings: 27 of 45 concepts exist as of 2026-09-22 (review sheets in `review-shots/`); the remaining 18 are blocked by the Codex usage limit and resume with `docs/prompts/runs/MAU-BLD-001/run_batch.sh`. Ships, kit sheet and the Exchange are approved.
+Buildings: **all 45 concepts generated** as of 2026-09-22 (review sheets in `review-shots/`); awaiting owner verdict. Ships, kit sheet and the Exchange are approved.
 
 **Asset IDs are race-prefixed** (owner decision 2026-09-14): `MAU-<CATEGORY>-<ROLE>-NNN` for
 buildings, props, environment, missiles and satellites (`MAU-BLD-CMD-001`), and `MAU-SHP-NNN`
