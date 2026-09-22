@@ -105,16 +105,16 @@ game's structure list is shared across factions. Only the anchor has a Mauna wor
 | MAU-BLD-STO-001–003 | Ore Storage / Protected Storage Tower / Ore Teleporter | concept v01 generated, awaiting verdict |
 | MAU-BLD-PWR-001–005 | Solar Panel / Solar Matrix / Power Store / Power Plant / High-Energy Generator | concept v01 generated, awaiting verdict |
 | MAU-BLD-MFG-001–004 | Weapons Factory / Shipyard / Space Dock / Construction Yard | concept v01 generated, awaiting verdict |
-| MAU-BLD-LOG-001–004 | Landing Pad / Refuelling Depot / Repair Facility / Cargo Depot | 001 generated, awaiting verdict; 002–004 blocked by Codex usage limit |
-| MAU-BLD-DEF-001–008 | Basic / Plasma / Photon Turret, Anti-Missile Pod, Screen Gen., Missile / Satellite Silo, Bunker | not generated yet; blocked by Codex usage limit (resume with `docs/prompts/runs/MAU-BLD-001/run_batch.sh`) |
-| MAU-BLD-SEN-001–002 | Sensor Array / Long Range Transmitter | not generated yet; blocked by Codex usage limit (resume with `docs/prompts/runs/MAU-BLD-001/run_batch.sh`) |
-| MAU-BLD-TEC-001–005 | Gravity Nullifier / Asteroid Engine / Shield Gen. / Droid Hub / Teleportation | not generated yet; blocked by Codex usage limit (resume with `docs/prompts/runs/MAU-BLD-001/run_batch.sh`) |
+| MAU-BLD-LOG-001–004 | Landing Pad / Refuelling Depot / Repair Facility / Cargo Depot | all generated, awaiting verdict; LOG-002 (hazard stripes) and LOG-003 (open bay) have v02 fixes queued |
+| MAU-BLD-DEF-001–008 | Basic / Plasma / Photon Turret, Anti-Missile Pod, Screen Gen., Missile / Satellite Silo, Bunker | concept v01 generated, awaiting verdict |
+| MAU-BLD-SEN-001–002 | Sensor Array / Long Range Transmitter | concept v01 generated, awaiting verdict |
+| MAU-BLD-TEC-001–005 | Gravity Nullifier / Asteroid Engine / Shield Gen. / Droid Hub / Teleportation | concept v01 generated, awaiting verdict |
 | MAU-SHP-001 | Scoutship | concept v03a approved (v01, v02 rejected; v03b not used) |
-| MAU-SHP-002 | Assault Fighter | not started |
+| MAU-SHP-002 | Assault Fighter | concept v01 generated, awaiting verdict |
 | MAU-SHP-003 | Hauler | concept v01 approved |
-| MAU-SHP-004 | Combat Eagle | not started |
-| MAU-SHP-005 | Terminator | not started |
-| MAU-SHP-006 | Command Cruiser | not started |
+| MAU-SHP-004 | Combat Eagle | concept v01 generated, awaiting verdict |
+| MAU-SHP-005 | Terminator | queued; blocked by Codex usage limit (resume `docs/prompts/runs/MAU-FINAL-001/run`) |
+| MAU-SHP-006 | Command Cruiser | queued; blocked by Codex usage limit |
 | MAU-SHP-007 | Fleet Battleship | concept v01 approved |
 | MAU-MIS-ORD-001–003, MAU-SAT-ORB-001–003 | missiles and satellites | not started |
 | MAU-ENV-INF-001–002, MAU-PRP-IND-001–007, MAU-PRP-CON-001–002 | environment and prop kits | not started |
