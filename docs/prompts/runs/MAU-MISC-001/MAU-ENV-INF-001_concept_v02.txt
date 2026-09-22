@@ -1,0 +1,18 @@
+Use your image generation tool to create exactly ONE image. Two reference images are attached:
+1. MAU-ENV-INF-001_concept_v01.png: the previous version of this kit sheet. Keep the same modules, layout, materials and palette.
+2. MAU-emblem_ref_v01.png: the approved Mauna crescent-and-blade emblem.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Environment\MAU-ENV-INF-001\MAU-ENV-INF-001_concept_v02.png
+
+PROMPT:
+Redraw the Mauna construction pad kit from reference 1 with the same modules in the same arrangement: stepped gunmetal plinth slabs in three sizes, a corner block, an edge block, a solid anchoring plate, a shallow covered service trench and a ramp block. TWO CHANGES, everything else identical.
+
+CHANGE 1 — BACKGROUND: the background must be a single plain flat light-grey tone across the entire image, edge to edge. No dark vignette, no gradient, no shadow, no spotlight, no floor. Each module sits isolated on that flat grey.
+
+CHANGE 2 — MARKINGS: remove every red-and-white diagonal or vertical hazard stripe from the modules. Diagonal hazard striping is forbidden in this faction. Replace them with plain worn plating, and at most one small crescent-and-blade emblem stencil from reference 2 on the largest plinth.
+
+Each module is drawn separately at consistent scale with a short label in small plain dark-grey capitals beneath it. No title, no heading, no tagline, no other text.
+
+Mauna smuggler-salvage faction: tarnished bronze and umber, verdigris-oxidised stepped patch plates, off-white only on whole salvaged sections, thick gunmetal clamp collars and plinth edges, deep crimson only as small flat stencils. Worn at edges and corners.
+
+Elevated orthographic-style three-quarter views, flat even studio lighting, no cast shadow, no rim light, no baked ambient occlusion, no glow. Solid enclosed volumes and closed silhouettes; no lattice, no thin parts, no holes. Matte to satin only; no chrome, gloss or transparency. Stencils are flat paint, not raised geometry.

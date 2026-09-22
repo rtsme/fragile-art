@@ -1,0 +1,16 @@
+Use your image generation tool to create exactly ONE image. Two reference images are attached:
+1. MAU-PRP-IND-006_concept_v01.png: the previous version of this kit sheet. Keep the same containers, layout, materials and palette.
+2. MAU-emblem_ref_v01.png: the approved Mauna crescent-and-blade emblem.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Props\MAU-PRP-IND-006\MAU-PRP-IND-006_concept_v02.png
+
+PROMPT:
+Redraw the Mauna cargo crate kit from reference 1 with the same containers in the same arrangement: stackable rectangular crates in three sizes, a flat pallet block, a sealed drum, a long capsule container and a stacked pair of crates. ONE CHANGE, everything else identical.
+
+CHANGE — BACKGROUND: the background must be a single plain flat light-grey tone across the entire image, edge to edge. No dark vignette, no gradient, no brown haze, no shadow, no spotlight, no floor. Each container sits isolated on that flat grey, and every label must be clearly legible in small plain dark-grey capitals beneath its container.
+
+No title, no heading, no tagline, no other text. At most one small crescent-and-blade emblem stencil from reference 2 across the whole sheet.
+
+Mauna smuggler-salvage faction: tarnished bronze and umber, verdigris-oxidised stepped patch plates, off-white only on whole salvaged sections, thick gunmetal clamp bands and corner blocks, deep crimson only as small flat stencils. Worn at bands and corners. No hazard striping.
+
+Elevated orthographic-style three-quarter views, flat even studio lighting, no cast shadow, no rim light, no baked ambient occlusion, no glow. Solid enclosed volumes and closed silhouettes; no thin parts, no holes. Matte to satin only; no chrome, gloss or transparency. Stencils are flat paint, not raised geometry.
