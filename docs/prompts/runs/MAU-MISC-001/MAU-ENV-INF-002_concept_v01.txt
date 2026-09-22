@@ -1,0 +1,13 @@
+Use your image generation tool to create exactly ONE image. Three reference images are attached:
+1. MAU-BLD-CMD-001_concept_v01.png: an approved Mauna asset. Match ONLY its materials, surface texture, palette, wear and rendering style. Do NOT copy its shape or composition.
+2. MAU-emblem_ref_v01.png: the approved Mauna crescent-and-blade emblem.
+3. ENV-INF-002_concept_v01.png: the Terran Road and Pipe Network. Use it ONLY to understand what this asset is for and roughly how big its parts are. Do NOT copy its Terran style, colours, hazard stripes or thin parts.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Environment\MAU-ENV-INF-002\MAU-ENV-INF-002_concept_v01.png
+
+PROMPT:
+Mauna Road and Pipe Network, 2-100 m modules, for connecting colony buildings visually. A labelled kit sheet of isolated Mauna connection modules in neat rows on a light-grey background: straight road slabs, a corner and a T-junction slab, a raised solid walkway block, enclosed pipe trunk sections as thick solid boxes with clamp collars, a pipe elbow, a pipe tee and a junction block. Every pipe is an enclosed solid trunk, never an open tube or a thin free-standing pipe. Short labels only.
+
+Mauna smuggler-salvage faction: hardware acquired and rebuilt. Tarnished bronze and umber, verdigris-oxidised stepped patch plates, off-white only on whole salvaged sections, thick gunmetal clamp collars and plinths, near-black opaque glazing, and a single controlled accent of deep crimson as small flat stencils, with at most one small crescent-and-blade emblem from reference 2. Wear concentrates at collars and edges. Avoid Terran hazard stripes, tarps, dangling cargo, clean luxury curves and neon.
+
+Isolated elevated orthographic-style three-quarter view, complete subject centred on a plain flat light-grey background, matching the rendering style and lighting of reference 1. No ground shadow, no environment, no watermark, no people, no vehicles. Build it to be scanned into 3D: solid enclosed volumes and closed silhouettes; no open lattice, truss, scaffold or frame; no wires, cables, ropes, chains, railings, ladders or thin aerials; no holes or see-through gaps; no feature smaller than about 2% of the object's longest dimension; large planes with deep bold breaks, no fine greeble or rivets. Glass is flat, opaque and near-black. Matte to satin only; no chrome, gloss or transparency. Flat even studio lighting, no rim light, no baked ambient occlusion, no glowing lights or emissive surfaces. Stencils are flat paint, not raised geometry.
