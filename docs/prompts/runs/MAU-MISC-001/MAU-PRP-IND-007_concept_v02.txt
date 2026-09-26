@@ -1,0 +1,14 @@
+Use your image generation tool to create exactly ONE image. Two reference images are attached:
+1. MAU-PRP-IND-007_concept_v01.png: the previous version of this kit sheet. Keep the same parts, arrangement, materials, palette and lighting.
+2. MAU-emblem_ref_v01.png: the approved Mauna crescent-and-blade emblem.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Props\MAU-PRP-IND-007\MAU-PRP-IND-007_concept_v02.png
+
+PROMPT:
+Redraw the Mauna antenna and sensor kit from reference 1 with exactly the same parts in the same arrangement: thick-bowl dishes with heavy rims in three sizes on blocky mounts, a blocky radar head, a flat panel sensor block, a solid tapered mast base and an equipment box.
+
+ONE CHANGE: remove the title line in the top-left corner entirely, including the kit name and the size range beneath it. The ONLY text anywhere in the image is a short label in small plain dark-grey capitals beneath each part, naming that part. No heading, no size annotation, no watermark.
+
+Everything else is identical: same flat light-grey background edge to edge, same worn bronze and umber plating with verdigris patches and off-white salvaged sections, gunmetal rims and mounts, and at most one small crescent-and-blade emblem stencil from reference 2 across the whole sheet.
+
+Every dish is a thick solid bowl with an obvious heavy rim on a chunky block mount, never a thin curved sheet, and there are no thin aerials, rods or feed struts. Elevated orthographic-style three-quarter views, flat even studio lighting, no cast shadow, no rim light, no baked ambient occlusion, no glow. Solid enclosed volumes and closed silhouettes. Matte to satin only; no chrome, gloss or transparency. Stencils are flat paint, not raised geometry.

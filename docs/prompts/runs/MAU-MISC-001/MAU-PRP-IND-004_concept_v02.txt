@@ -1,0 +1,14 @@
+Use your image generation tool to create exactly ONE image. Two reference images are attached:
+1. MAU-PRP-IND-004_concept_v01.png: the previous version of this kit sheet. Keep the same modules, arrangement, materials, palette and lighting.
+2. MAU-emblem_ref_v01.png: the approved Mauna crescent-and-blade emblem.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Props\MAU-PRP-IND-004\MAU-PRP-IND-004_concept_v02.png
+
+PROMPT:
+Redraw the Mauna industrial pipe kit from reference 1 with exactly the same modules in the same arrangement: small, medium and large enclosed pipe trunks, a 90-degree elbow, a tee, a valve block, a clamp-collar coupler and a capped end block, each seated on small plinth blocks.
+
+ONE CHANGE: remove the large title block in the top-left corner entirely. Delete the big faction name, the kit name and the tagline line beneath them. The ONLY text anywhere in the image is a short label in small plain dark-grey capitals beneath each module, naming that module. No heading, no tagline, no logo text, no watermark.
+
+Everything else is identical: same flat light-grey background edge to edge, same worn bronze and umber plating with verdigris patches and off-white salvaged sections, thick gunmetal clamp collars, and at most one small crescent-and-blade emblem stencil from reference 2 across the whole sheet.
+
+Elevated orthographic-style three-quarter views, flat even studio lighting, no cast shadow, no rim light, no baked ambient occlusion, no glow. Solid enclosed volumes and closed silhouettes; no thin parts, no holes, no open tube ends. Matte to satin only; no chrome, gloss or transparency. Stencils are flat paint, not raised geometry.

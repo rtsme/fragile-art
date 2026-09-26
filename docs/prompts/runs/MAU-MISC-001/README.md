@@ -34,3 +34,7 @@ not go to the reference stage while the background is a vignette.
 **2026-09-23 00:07.** PRP-IND-006 v02 saved: flat light-grey field, legible labels, no vignette. Both
 background faults are now fixed, and every asset in this batch is reference-stage ready. The only
 remaining deviations are the cosmetic title lines on PRP-IND-004 and PRP-IND-007.
+
+**2026-09-26 23:1x.** PRP-IND-004 v02 and PRP-IND-007 v02 saved: the sheet titles and taglines are gone,
+leaving only per-module labels. All four deviations from this batch are now resolved, and every asset
+in it is reference-stage ready.

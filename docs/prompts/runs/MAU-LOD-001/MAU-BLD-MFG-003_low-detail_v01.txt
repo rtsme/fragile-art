@@ -1,0 +1,20 @@
+Use your image generation tool to create exactly ONE image. One reference image is attached:
+1. MAU-BLD-MFG-003_concept_v01.png: the approved Mauna concept for this asset. Keep its silhouette, proportions and palette; simplify everything else.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Buildings\MAU-BLD-MFG-003\LowDetail\MAU-BLD-MFG-003_low-detail_concept_v01.png
+
+PROMPT:
+A low-detail, generation-ready version of the Mauna asset in reference 1, for conversion to a game mesh. Keep only: the two enormous parallel hull spines forming a U-shaped cradle with corner towers.
+
+LOW-DETAIL CONVERSION RULES — these override any detail in the reference:
+- One coherent, watertight, single-piece asset. Nothing floats, nothing is disconnected, and no geometry continues beneath the foundation.
+- Preserve the source silhouette and only the identity features named above. Delete everything else.
+- Broad planar masses, thick structural forms, shallow chamfers, minimal rounding. Far simpler than the reference: roughly a tenth of its detail.
+- Remove all railings, cables, ropes, exposed pipes, antennae, rods, ladders, fans, fine vents, tiny panels, small patch plates, rivets, open frames and loose props.
+- A dish is kept only when it is named as an identity feature, and then only as a thick faceted solid bowl on a chunky block.
+- Keep one or two large flat stencils at most; no small markings.
+- Materials as flat zones, not textures: tarnished bronze and umber armour, gunmetal structure and plinths, one off-white salvaged section, flat near-black glazing, sparse flat crimson accents. Keep the Mauna palette; do not use Terran off-white-and-amber.
+- Glass is flat, opaque and dark, with no interior.
+- Matte to satin only; no chrome, gloss, transparency or glow.
+
+Isolated elevated three-quarter view, complete asset centred on a plain flat light-grey background, edge to edge. No ground shadow, no environment, no text, no labels, no watermark, no people. Flat even studio lighting, no rim light, no baked ambient occlusion, no emissive surfaces.
