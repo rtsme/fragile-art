@@ -1,0 +1,15 @@
+Use your image generation tool to create exactly ONE image. One reference image is attached:
+1. MAU-BLD-SEN-002_low-detail_concept_v01.png: the previous low-detail version. Keep its layout, palette and camera.
+Do not edit any repository file. When the image exists, copy the generated PNG to this exact path (create folders as needed), then reply with only the saved path:
+C:\Users\major\Documents\Projects\FragileArt\Concepts\Mauna\Buildings\MAU-BLD-SEN-002\LowDetail\MAU-BLD-SEN-002_low-detail_concept_v02.png
+
+PROMPT:
+Redraw the low-detail Mauna long range transmitter from reference 1: a tall tapered banded tower on a stepped gunmetal base with buttress blocks, carrying one dish near the top.
+
+ONE CHANGE — THE DISH MUST BE A THICK SOLID BOWL: draw it as a heavy faceted bowl with an obvious thick rim, like a stone basin, at least one quarter as deep as it is wide, sitting on a chunky solid block mount welded to the tower. No thin curved sheet, no dish edge thinner than the rim block, no feed strut, no rod, no aerial in front of the bowl. The bowl's face is one flat dark zone.
+
+Everything else is identical: the same tower proportions, the same clamp bands, the same crimson stencil band, the same base and buttresses.
+
+Low-detail conversion rules: one coherent watertight single-piece asset, nothing floating or disconnected, no geometry beneath the foundation. Broad planar masses, thick forms, shallow chamfers. No railings, cables, pipes, rods, ladders, fine vents, tiny panels or rivets. Materials as flat zones: tarnished bronze and umber armour, gunmetal structure and base, one off-white salvaged section, sparse flat crimson accents.
+
+Isolated elevated three-quarter view, complete asset centred on a plain flat light-grey background edge to edge. No ground shadow, no environment, no text, no watermark. Flat even studio lighting, no rim light, no baked ambient occlusion, no glow. Matte to satin only.
