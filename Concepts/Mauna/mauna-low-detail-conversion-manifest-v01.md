@@ -32,7 +32,7 @@ Ships/<MAU-SHP-…>/LowDetail/<MAU-SHP-…>_low-detail_concept_v01.png
 
 ## Generated and visually checked
 
-**All 52 pass the locked rules**: solid single masses, closed silhouettes, flat grey field, no thin
+**Owner approved the low-detail set 2026-09-27.** **All 52 pass the locked rules**: solid single masses, closed silhouettes, flat grey field, no thin
 parts, no glow, palette consistent across the faction and distinct from the Terran set.
 
 ### Buildings (45)

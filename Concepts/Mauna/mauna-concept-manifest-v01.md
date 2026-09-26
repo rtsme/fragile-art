@@ -2,7 +2,7 @@
 
 Started 2026-09-14. Race: **Mauna** / folder `Mauna` / code **`MAU`**.
 Status: **style direction approved by the owner 2026-09-14** (look, palette and silhouette sheet).
-**The Mauna concept set is complete** as of 2026-09-22: 45 buildings, 7 ships, 3 missiles, 3 satellites, 2 environment kits and 9 prop kits (review sheets in `review-shots/`), awaiting owner verdict. Approved so far: the Exchange, the kit sheet, Scoutship v03a, Hauler and Fleet Battleship.
+**The Mauna concept set is complete** as of 2026-09-22: 45 buildings, 7 ships, 3 missiles, 3 satellites, 2 environment kits and 9 prop kits (review sheets in `review-shots/`), awaiting owner verdict. Approved so far: the Exchange, the kit sheet, Scoutship v03a, Hauler and Fleet Battleship; the whole 52-asset low-detail set was approved 2026-09-27.
 
 **Asset IDs are race-prefixed** (owner decision 2026-09-14): `MAU-<CATEGORY>-<ROLE>-NNN` for
 buildings, props, environment, missiles and satellites (`MAU-BLD-CMD-001`), and `MAU-SHP-NNN`
