@@ -45,12 +45,12 @@ parts, no glow, palette consistent across the faction and distinct from the Terr
 | Mining | MAU-BLD-MIN-001–004 | Pass |
 | Storage | MAU-BLD-STO-001–003 | Pass |
 | Power | MAU-BLD-PWR-001, 003–005 | Pass |
-| Power (panels) | MAU-BLD-PWR-002 | **Thin-element risk**: radiating wings read as flat blades; v02 queued with thick slab wings |
+| Power (panels) | MAU-BLD-PWR-002 | **Fixed at v02**: wings redrawn as thick rigid slabs with visible edge depth on chunky roots |
 | Manufacturing | MAU-BLD-MFG-001–004 | Pass |
 | Logistics | MAU-BLD-LOG-001–004 | Pass |
 | Defence | MAU-BLD-DEF-001–008 | Pass; barrel shrouds are thick blocks, launcher cells closed |
 | Sensors | MAU-BLD-SEN-001 | Watch: dish bowl is close to the thickness floor, acceptable as drawn |
-| Sensors | MAU-BLD-SEN-002 | **Thin-element risk**: tower dish reads as a thin sheet; v02 queued with a thick faceted bowl |
+| Sensors | MAU-BLD-SEN-002 | **Fixed at v02**: dish redrawn as a heavy solid faceted bowl on a block mount |
 | Advanced tech | MAU-BLD-TEC-001–005 | Pass |
 
 ### Ships (7)
@@ -69,8 +69,7 @@ parts, no glow, palette consistent across the faction and distinct from the Terr
 
 Solar and sensor assets are the only Mauna forms whose identity feature is inherently thin. The rule
 is: panels are rigid thick slabs with visible edge depth, dishes are thick faceted bowls with heavy
-rims. `MAU-BLD-PWR-001` and `MAU-BLD-SEN-001` sit within tolerance as drawn; `MAU-BLD-PWR-002` and
-`MAU-BLD-SEN-002` do not and have v02 re-rolls.
+rims. `MAU-BLD-PWR-001` and `MAU-BLD-SEN-001` sit within tolerance as drawn; `MAU-BLD-PWR-002` and `MAU-BLD-SEN-002` were redrawn at v02 and now comply; their v01 files stay as record.
 
 ## Next stage
 
