@@ -59,9 +59,18 @@ def main() -> None:
     if not sheet.exists():
         raise SystemExit(f"{asset}: no generated sheet")
 
+    # The crop tool requires even dimensions; some generated sheets come back odd by a pixel.
+    with Image.open(sheet) as im:
+        w, h = im.size
+        if w % 2 or h % 2:
+            sheet = d / f"{stem}_reference-sheet_v02.png"
+            im.convert("RGB").crop((0, 0, w - (w % 2), h - (h % 2))).save(sheet)
+
     run(["python", "tools/crop-reference-sheet.py", str(sheet), "--output-dir", str(d),
          "--stem", stem, "--version", "v03", "--center-gutter-px", "3"])
-    target = silhouette_height(d / f"{stem}_front_v03.png")
+    # Normalise DOWN to the smallest view: scaling up pushes a wide subject into the tile edge, and
+    # the tools drop any silhouette touching the border, which wipes the view entirely.
+    target = min(silhouette_height(d / f"{stem}_{v}_v03.png") for v in ("front", "back", "left", "right"))
 
     run(["python", "tools/normalize-reference-views.py", str(sheet),
          *[str(d / f"{stem}_{v}_v03.png") for v in ("front", "back", "left", "right")],

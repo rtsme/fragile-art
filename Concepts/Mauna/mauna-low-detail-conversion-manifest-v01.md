@@ -73,7 +73,7 @@ rims. `MAU-BLD-PWR-001` and `MAU-BLD-SEN-001` sit within tolerance as drawn; `MA
 
 ## Next stage
 
-Cardinal four-view reference sets are generated from an **approved** low-detail concept, not from the
+**Buildings: done.** All 45 have a validated four-view set under `References/Mauna/Buildings/<asset>/LowDetail/` (v04 files), each passing `tools/check-views.py`. See `docs/prompts/runs/MAU-REF-001/README.md` for the three faults this stage exposed. Ships still need their own sets: they use the top/bottom/left/rear convention checked by `tools/check-ship-views.py`.
 dressed concept. The anchor `MAU-BLD-CMD-001` goes first, then the P0 assets
 (MAU-BLD-MIN-001, MAU-BLD-MIN-003, MAU-BLD-PWR-004, MAU-BLD-MFG-002, MAU-BLD-LOG-001,
 MAU-BLD-DEF-002, MAU-SHP-001, MAU-SHP-003, MAU-SHP-007).
